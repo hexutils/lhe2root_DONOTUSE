@@ -11,10 +11,10 @@ This package should be installed within an instance of JHUGenMELA. The recommend
   - This program will take in command line arguments and convert all the files within your working directory, as well as any subdirectories below, to a ROOT file using lhe2root.py
   
 - `plot_one_quantity.py`
-  - This program will take in command line arguments and plot a single attribute from a list of files given
+  - This program will take in command line arguments and plot a single attribute from a list of ROOT files given
 
 - `plot_interference.py`
-  - Given a series of interference triplets (one mixed sample and 2 pure samples i.e. ab, a, and b) as command line arguments, this program will plot their interference and compare them against each other
+  - Given a series of ROOT file interference triplets (one mixed sample file and 2 pure sample files i.e. AB, A, and B) as command line arguments, this program will plot their interference and compare the interference terms for each triplet against each other
 
 
 ## Useful Functions
