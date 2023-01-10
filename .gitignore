@@ -1,0 +1,7 @@
+Pdfdata/*
+__pycache__/*
+*.sm1
+*.sm2
+*.DAT
+*.dat
+*.csv
