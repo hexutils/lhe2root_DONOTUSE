@@ -40,7 +40,7 @@ There are also some useful defined constants within `lhe2root_methods.py`. There
 - beautified_title
   - This dictionary provides a conversion between the shorthand for an attribute (i.e. M4L) and the beautified version suitable for matplotlib (i.e. $m_{4\mu}$)
 - ranges
-  - This dictionary does the same as beautified_title, except it converts the shorthand to the commonly defined ranges (i.e. phi $\in$ [$-\pi, \pi$])
+  - This dictionary does the same as beautified_title, except it converts the shorthand to the commonly defined ranges (i.e. phi $\in [-\pi, \pi ]$)
 
 ## Dependencies
 
