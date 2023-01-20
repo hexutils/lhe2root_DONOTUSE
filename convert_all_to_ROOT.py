@@ -1,5 +1,6 @@
 import os
 import argparse
+import lhe_constants
 import lhe2root_methods
 
 exceptions = { #There is no reason to store LHE files in the pycache folder. Use this to hardcode other exceptions in
@@ -8,7 +9,7 @@ exceptions = { #There is no reason to store LHE files in the pycache folder. Use
 
 parser = argparse.ArgumentParser()
 parser.add_argument('argument', type=str,
-                    choices=lhe2root_methods.lhe_2_root_options,
+                    choices=lhe_constants.lhe_2_root_options,
                     help="The argument to be passed to LHE2ROOT.py")
 
 parser.add_argument('-c',"--clean", action='store_true',

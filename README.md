@@ -16,14 +16,17 @@ This package should be installed within an instance of JHUGenMELA. The recommend
 - `plot_interference.py`
   - Given a series of ROOT file interference triplets (one mixed sample file and 2 pure sample files i.e. AB, A, and B) as command line arguments, this program will plot their interference and compare the interference terms for each triplet against each other
 
+- `slice_lhe_files.py`
+  - Given a series of LHE files as command line arguments and an integer number of events this program will cut all of the files given down to the number of events requested
 
 ## Useful Functions
 
-All of the programs simply use the functions stored within `lhe2root_methods.py` by taking in command line arguments. Should you desire to use any of these functions individually, that is very easy. Simply import `lhe2root_methods.py` and continue. The following functions are included in `lhe2root_methods.py`:
+All of the programs simply use the functions stored within `lhe2root_methods.py` or `lhefile_methods.py` by taking in command line arguments. Should you desire to use any of these functions individually, that is very easy. Simply import `lhe2root_methods.py` and continue. 
+
+The following functions are included in `lhe2root_methods.py`:
 
 ```python 
 scale(counts, scaleto)
-print_msg_box(msg, indent=1, width=None, title=None)
 get_cross_section_from_LHE_file(LHE_file_path)
 check_for_MELA()
 recursively_convert(current_directory, argument, clean=False, verbose=False, exceptions=set(), write="")
@@ -31,16 +34,29 @@ plot_one_quantity(filenames, attribute, xrange, nbins=100, labels=[], norm=False
 plot_interference(mixed_file, pure1, pure2, pure1Name, pure2Name, attribute, cross_sections, nbins=100, title="")
 ```
 
+The following functions are included in `lhfile_methods.py`
+```python
+get_all_events(lhefile)
+get_non_event_portions(lhefile)
+cut_down_to_size(lhefile, n, verbose=False)
+```
+
 ## Useful Defined Constants
 
-There are also some useful defined constants within `lhe2root_methods.py`. There are currently 3 of these such constants:
+There are also some useful defined constants within `lhe_constants.py`. There are currently 3 of these such constants:
 
-- lhe_2_root_options
+- `lhe_2_root_options`
   - This is a list of all the possible options that are available to `lhe2root.py`
-- beautified_title
+- `beautified_title`
   - This dictionary provides a conversion between the shorthand for an attribute (i.e. M4L) and the beautified version suitable for matplotlib (i.e. $m_{4\mu}$)
-- ranges
+- `ranges`
   - This dictionary does the same as beautified_title, except it converts the shorthand to the commonly defined ranges (i.e. phi $\in [-\pi, \pi ]$)
+- `event_selection_regex`
+  - This is the regex that selects events in an LHE file
+- ```python
+  print_msg_box(msg, indent=1, width=None, title=None)
+  ```
+  - While not a constant, this is simply a useful function for printing values out. Hence, to save space - it is in the constants file
 
 ## Dependencies
 
