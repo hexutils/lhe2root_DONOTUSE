@@ -16,11 +16,16 @@ mpl.rcParams['xaxis.labellocation'] = 'center'
 def scale(counts, scaleto):
     """This function scales histograms according to their absolute area under the curve (no negatives allowed!)
 
-    Arguments:
-        counts -- A list of bin counts
-        scaleto -- The absolute area to scale to
+    Parameters
+    ----------
+    counts : list[Union[int,float]]
+        A list of bin counts
+    scaleto : float
+        The absolute area to scale to
 
-    Returns:
+    Returns
+    -------
+    list[float]
         The scaled histogram
     """
     counts = counts.astype(float)
@@ -33,10 +38,14 @@ def scale(counts, scaleto):
 def get_cross_section_from_LHE_file(LHE_file_path):
     """Gets the cross section and its uncertainty from a given LHE file using regular expressions
 
-    Arguments:
-        LHE_file_path -- The file path for the LHE file
+    Parameters
+    ----------
+    LHE_file_path : str
+        The file path for the LHE file
 
-    Returns:
+    Returns
+    -------
+    Tuple[str, str]
         A tuple of strings containing the cross section and its uncertainty
     """
     
@@ -56,9 +65,11 @@ def get_cross_section_from_LHE_file(LHE_file_path):
     return cross_section, uncertainty #returns the cross section and its uncertainty        
 
 def check_for_MELA():
-    """A simple function that checks whether or not you have the environment variables for MELA set up within your terminal
+    """A function that checks whether or not you have the environment variables for MELA set up within your terminal
 
-    Returns:
+    Returns
+    -------
+    bool
         A boolean as to whether or not MELA is properly set up
     """
     if "LD_LIBRARY_PATH" not in os.environ: #this library path is set up by the MELA setup script
@@ -77,21 +88,35 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
     """This function will recurse through every directory and subdirectory in the place you call it, 
     and attempt to convert those files to ROOT files using lhe2root
 
-    Arguments:
-        current_directory -- The directory to start recursing downwards from
-        argument -- the lhe2root argument to use (see lhe_2_root_options at the top of the file)
+    Parameters
+    ----------
+    current_directory : str
+        The directory to start recursing downwards from
+    output_directory : str
+        The directory to output results to
+    argument : str
+        the lhe2root argument to use (see lhe_2_root_options in lhe_constants)
+    clean : bool, optional
+        If True, this function will wipe any old conversion and re-convert the files, by default False
+    verbose : bool, optional
+        If true, the function will be verbose, by default False
+    exceptions : set, optional
+        Any absolute path with this string in it will be ignored, by default set()
+        NOTE: This is the case for any string in the path! folders of path <exception>/<other folder> will be ignored
+        The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!
+        Name your folders carefully!
+    write : str, optional
+        If a string, this will be the file that you will write the cross sections to. The file will be comma-separated, by default ""
 
-    Keyword Arguments:
-        clean -- If True, this function will wipe any old conversion and re-convert the files (default: {False})
-        verbose -- If true, the function will be verbose (default: {False})
-        exceptions -- Any absolute path with this string in it will be ignored(default: {set()})
-            NOTE: This is the case for any string in the path! folders of path <exception>/<other folder> will be ignored
-            The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!
-            Name your folders carefully!
-        write -- If a string, this will be the file that you will write the cross sections to. The file will be comma-separated
-            
-    Returns:
+    Returns
+    -------
+    dict
         Returns a dictionary with the cross section/uncertainty pairs for every file
+
+    Raises
+    ------
+    FileNotFoundError
+        If the output directory is not found/not a directory raises an error
     """
     
     if output_directory[-1] != '/':
@@ -165,25 +190,36 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
 
 
 def plot_one_quantity(filenames, attribute, xrange, nbins=100, labels=[], norm=False, title=""):
-    """This function plots one quantity of your choice from a ROOT file!
+    """This function plots one quantity of your choice from ROOT files!
 
-    Arguments:
-        filenames -- The ROOT files you are plotting from
-        attribute -- The TBranches you are plotting (the files should have the same names for branches)
-        xrange -- The range for your x axis for this attribute
+    Parameters
+    ----------
+    filenames : list[str]
+        The ROOT files you are plotting from
+    attribute : str
+        The TBranch you are plotting (the files should have the same names for branches)
+    xrange : tuple[float, float]
+        The range for your x axis for this attribute
+    nbins : int, optional
+        The number of bins. This can either be a number or a list, by default 100
+    labels : list, optional
+        The labels for each file plotted, by default []
+    norm : bool, optional
+        Whether to normalize the plotting areas to 1 for easier comparison, by default False
+    title : str, optional
+        An extra "title" on the x label that is concatenated, by default ""
 
-    Keyword Arguments:
-        nbins -- The number of bins. This can either be a number or a list (default: {100})
-        labels -- The labels for each file plotted (default: {[]})
-        norm -- Whether to normalize the plotting areas to 1 for easier comparison (default: {False})
-        title -- An extra "title" on the x label that is concatenated (default: {""})
-
-    Raises:
-        ValueError: If your list of labels and list of filenames are not the same length
-        ValueError: If you choose a column that is undefined
-
-    Returns:
+    Returns
+    -------
+    dict
         A dictionary of NumPy style histogram tuple of counts and bins with the filename as the key
+
+    Raises
+    ------
+    ValueError
+        If your list of labels and list of filenames are not the same length
+    ValueError
+        If you choose a column that is undefined
     """
     if labels and len(labels) != len(filenames):
         raise ValueError("labels and files should be the same length!")
@@ -231,22 +267,30 @@ def plot_one_quantity(filenames, attribute, xrange, nbins=100, labels=[], norm=F
 def plot_interference(mixed_file, pure1, pure2, pure1Name, pure2Name, attribute, cross_sections, nbins=100, title=""):
     """Plots the interference between two samples given a file containing a mixture of the two, and two "pure" samples
 
-    Arguments:
-        mixed_file -- The file containing a simulation of pure1 and pure2 together
-        pure1 -- Just one of the two items (no mixing)
-        pure2 -- Just the other of the two items (no mixing)
-        pure1Name -- The name for what this sample is called
-        pure2Name -- The name for what this sample is called
-        attribute -- The thing you are plotting (i.e. M4L, phi, etc.)
-        cross_sections -- A dictionary containing the cross sections of each file in the following format: 
-            {filename: cross section}
+    Parameters
+    ----------
+    mixed_file : str
+        The ROOT file containing a simulation of pure1 and pure2 together
+    pure1 : str
+        ROOT file for one of the two items (no mixing)
+    pure2 : str
+        ROOT file for the other of the two items (no mixing)
+    pure1Name : str
+        The name for what this sample is called
+    pure2Name : str
+        The name for what this sample is called
+    attribute : str
+        The thing you are plotting (i.e. M4L, phi, etc.)
+    cross_sections : dict
+        A dictionary containing the cross sections of each file in the following format: {filename: cross section}
+    nbins : int, optional
+        The number of bins for your plot. This can either be an integer or a list of bins, by default 100
+    title : str, optional
+        An extra "title" on the x label that is concatenated, by default ""
 
-    Keyword Arguments:
-        nbins -- The number of bins for your plot. This can either be an integer or a list of bins (default: {100})
-        title -- An extra "title" on the x label that is concatenated (default: {""})
-        
-
-    Returns:
+    Returns
+    -------
+    _type_
         The interference portion between the three plots
     """
     

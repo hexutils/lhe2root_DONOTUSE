@@ -47,20 +47,21 @@ ranges = { #a dictionary of ranges to make your life easier!
 event_selection_regex = re.compile(r'(?s)(<event>(.*?)</event>)') #regular expression to find every event
 
 
-def print_msg_box(msg, indent=1, width=None, title=None):
+def print_msg_box(msg, indent=1, width=0, title=""):
     """Print message-box with optional title.
     Ripped from https://stackoverflow.com/questions/39969064/how-to-print-a-message-box-in-python
-    Arguments:
-        msg -- The message to use
-
-    Keyword Arguments:
-        indent -- indent size (default: {1})
-        width -- box width (default: {None})
-        title -- box title (default: {None})
-        
-    Returns:
-        None
+    Parameters
+    ----------
+    msg : str
+        The message to use
+    indent : int, optional
+        indent size, by default 1
+    width : int, optional
+        box width, by default 0
+    title : str, optional
+        box title, by default ""
     """
+    
     lines = msg.split('\n')
     space = " " * indent
     if not width:

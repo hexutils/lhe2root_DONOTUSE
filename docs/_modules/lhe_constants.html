@@ -120,20 +120,21 @@
 <span class="n">event_selection_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?s)(&lt;event&gt;(.*?)&lt;/event&gt;)&#39;</span><span class="p">)</span> <span class="c1">#regular expression to find every event</span>
 
 
-<div class="viewcode-block" id="print_msg_box"><a class="viewcode-back" href="../lhe_constants.html#lhe_constants.print_msg_box">[docs]</a><span class="k">def</span> <span class="nf">print_msg_box</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="print_msg_box"><a class="viewcode-back" href="../lhe_constants.html#lhe_constants.print_msg_box">[docs]</a><span class="k">def</span> <span class="nf">print_msg_box</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print message-box with optional title.</span>
 <span class="sd">    Ripped from https://stackoverflow.com/questions/39969064/how-to-print-a-message-box-in-python</span>
-<span class="sd">    Arguments:</span>
-<span class="sd">        msg -- The message to use</span>
-
-<span class="sd">    Keyword Arguments:</span>
-<span class="sd">        indent -- indent size (default: {1})</span>
-<span class="sd">        width -- box width (default: {None})</span>
-<span class="sd">        title -- box title (default: {None})</span>
-<span class="sd">        </span>
-<span class="sd">    Returns:</span>
-<span class="sd">        None</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    msg : str</span>
+<span class="sd">        The message to use</span>
+<span class="sd">    indent : int, optional</span>
+<span class="sd">        indent size, by default 1</span>
+<span class="sd">    width : int, optional</span>
+<span class="sd">        box width, by default 0</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        box title, by default &quot;&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="n">lines</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">space</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">width</span><span class="p">:</span>

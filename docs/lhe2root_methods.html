@@ -87,10 +87,13 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="lhe2root_methods.check_for_MELA">
 <span class="sig-prename descclassname"><span class="pre">lhe2root_methods.</span></span><span class="sig-name descname"><span class="pre">check_for_MELA</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhe2root_methods.html#check_for_MELA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhe2root_methods.check_for_MELA" title="Permalink to this definition"></a></dt>
-<dd><p>A simple function that checks whether or not you have the environment variables for MELA set up within your terminal</p>
+<dd><p>A function that checks whether or not you have the environment variables for MELA set up within your terminal</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A boolean as to whether or not MELA is properly set up</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -101,10 +104,13 @@
 <dd><p>Gets the cross section and its uncertainty from a given LHE file using regular expressions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file</strong> (<em>LHE_file_path -- The file path for the LHE</em>) – </p>
+<dd class="field-odd"><p><strong>LHE_file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The file path for the LHE file</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A tuple of strings containing the cross section and its uncertainty</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -116,23 +122,22 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>together</strong> (<em>mixed_file -- The file containing a simulation</em><em> of </em><em>pure1 and pure2</em>) – </p></li>
-<li><p><strong>items</strong> (<em>pure2 -- Just the other</em><em> of </em><em>the two</em>) – </p></li>
-<li><p><strong>items</strong> – </p></li>
-<li><p><strong>called</strong> (<em>pure2Name -- The name for what this sample is</em>) – </p></li>
-<li><p><strong>called</strong> – </p></li>
-<li><p><strong>plotting</strong> (<em>attribute -- The thing you are</em>) – </p></li>
-<li><p><strong>format</strong> (<em>cross_sections -- A dictionary containing the cross sections</em><em> of </em><em>each file in the following</em>) – {filename: cross section}</p></li>
+<li><p><strong>mixed_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The ROOT file containing a simulation of pure1 and pure2 together</p></li>
+<li><p><strong>pure1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – ROOT file for one of the two items (no mixing)</p></li>
+<li><p><strong>pure2</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – ROOT file for the other of the two items (no mixing)</p></li>
+<li><p><strong>pure1Name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name for what this sample is called</p></li>
+<li><p><strong>pure2Name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name for what this sample is called</p></li>
+<li><p><strong>attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The thing you are plotting (i.e. M4L, phi, etc.)</p></li>
+<li><p><strong>cross_sections</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – A dictionary containing the cross sections of each file in the following format: {filename: cross section}</p></li>
+<li><p><strong>nbins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – The number of bins for your plot. This can either be an integer or a list of bins, by default 100</p></li>
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – An extra “title” on the x label that is concatenated, by default “”</p></li>
 </ul>
 </dd>
-<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>(</strong><strong>default</strong> (<em>title -- An extra &quot;title&quot; on the x label that is concatenated</em>) – {100})</p></li>
-<li><p><strong>(</strong><strong>default</strong> – {“”})</p></li>
-</ul>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The interference portion between the three plots</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The interference portion between the three plots</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
 </dd>
 </dl>
 </dd></dl>
@@ -140,31 +145,30 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="lhe2root_methods.plot_one_quantity">
 <span class="sig-prename descclassname"><span class="pre">lhe2root_methods.</span></span><span class="sig-name descname"><span class="pre">plot_one_quantity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xrange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhe2root_methods.html#plot_one_quantity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhe2root_methods.plot_one_quantity" title="Permalink to this definition"></a></dt>
-<dd><p>This function plots one quantity of your choice from a ROOT file!</p>
+<dd><p>This function plots one quantity of your choice from ROOT files!</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>from</strong> (<em>filenames -- The ROOT files you are plotting</em>) – </p></li>
-<li><p><strong>plotting</strong> (<em>attribute -- The TBranches you are</em>) – </p></li>
-<li><p><strong>attribute</strong> (<em>xrange -- The range for your x axis for this</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>(</strong><strong>default</strong> (<em>title -- An extra &quot;title&quot; on the x label that is concatenated</em>) – {100})</p></li>
-<li><p><strong>(</strong><strong>default</strong> – {[]})</p></li>
-<li><p><strong>(</strong><strong>default</strong> – {False})</p></li>
-<li><p><strong>(</strong><strong>default</strong> – {“”})</p></li>
-</ul>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – If your list of labels and list of filenames are not the same length</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – If you choose a column that is undefined</p></li>
+<li><p><strong>filenames</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>]</em>) – The ROOT files you are plotting from</p></li>
+<li><p><strong>attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The TBranch you are plotting (the files should have the same names for branches)</p></li>
+<li><p><strong>xrange</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>]</em>) – The range for your x axis for this attribute</p></li>
+<li><p><strong>nbins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – The number of bins. This can either be a number or a list, by default 100</p></li>
+<li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em>, </em><em>optional</em>) – The labels for each file plotted, by default []</p></li>
+<li><p><strong>norm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to normalize the plotting areas to 1 for easier comparison, by default False</p></li>
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – An extra “title” on the x label that is concatenated, by default “”</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary of NumPy style histogram tuple of counts and bins with the filename as the key</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – If your list of labels and list of filenames are not the same length</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – If you choose a column that is undefined</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -177,23 +181,29 @@ and attempt to convert those files to ROOT files using lhe2root</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>from</strong> (<em>current_directory -- The directory to start recursing downwards</em>) – </p></li>
-<li><p><strong>use</strong> (<em>argument -- the lhe2root argument to</em>) – </p></li>
+<li><p><strong>current_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The directory to start recursing downwards from</p></li>
+<li><p><strong>output_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The directory to output results to</p></li>
+<li><p><strong>argument</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – the lhe2root argument to use (see lhe_2_root_options in lhe_constants)</p></li>
+<li><p><strong>clean</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, this function will wipe any old conversion and re-convert the files, by default False</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – If true, the function will be verbose, by default False</p></li>
+<li><p><strong>exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.11)"><em>set</em></a><em>, </em><em>optional</em>) – <p>Any absolute path with this string in it will be ignored, by default set()
+NOTE: This is the case for any string in the path! folders of path &lt;exception&gt;/&lt;other folder&gt; will be ignored</p>
+<blockquote>
+<div><p>The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!
+Name your folders carefully!</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>write</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – If a string, this will be the file that you will write the cross sections to. The file will be comma-separated, by default “”</p></li>
 </ul>
 </dd>
-<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>(</strong><strong>default</strong> (<em>verbose -- If true</em><em>, </em><em>the function will be verbose</em>) – {False})</p></li>
-<li><p><strong>(</strong><strong>default</strong> – {False})</p></li>
-<li><p><strong>ignored</strong><strong>(</strong><strong>default</strong> (<em>exceptions -- Any absolute path with this string in it will be</em>) – {set()})
-NOTE: This is the case for any string in the path! folders of path &lt;exception&gt;/&lt;other folder&gt; will be ignored
-The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!
-Name your folders carefully!</p></li>
-<li><p><strong>comma-separated</strong> (<em>write -- If a string</em><em>, </em><em>this will be the file that you will write the cross sections to. The file will be</em>) – </p></li>
-</ul>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns a dictionary with the cross section/uncertainty pairs for every file</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Returns a dictionary with the cross section/uncertainty pairs for every file</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.11)"><strong>FileNotFoundError</strong></a> – If the output directory is not found/not a directory raises an error</p>
 </dd>
 </dl>
 </dd></dl>
@@ -205,12 +215,15 @@ Name your folders carefully!</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>counts</strong> (<em>counts -- A list</em><em> of </em><em>bin</em>) – </p></li>
-<li><p><strong>to</strong> (<em>scaleto -- The absolute area to scale</em>) – </p></li>
+<li><p><strong>counts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em>[</em><em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>,</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>]</em><em>]</em>) – A list of bin counts</p></li>
+<li><p><strong>scaleto</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The absolute area to scale to</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The scaled histogram</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)">float</a>]</p>
 </dd>
 </dl>
 </dd></dl>
