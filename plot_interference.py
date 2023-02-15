@@ -2,6 +2,7 @@ import argparse
 import lhe2root_methods
 import mplhep as hep
 import matplotlib.pyplot as plt
+import lhe_constants
 
 
 def ran(s):
@@ -22,36 +23,35 @@ def ran(s):
     except:
         raise argparse.ArgumentTypeError("Ranges must be of form 'left, right'!")
 
-parser = argparse.ArgumentParser()
-
-parser.add_argument('-f', '--filenames',nargs=3, action="append", required=True,
-                    help="The file you want to plot. Order them as <Interference file> <signal1> <signal2>")
-
-parser.add_argument('-l', '--labels', nargs=2, type=str, required=True,
-                    help="The names of both your signals")
-
-parser.add_argument('-csf', '--crossSectionFile', default="CrossSections.csv",
-                    help="The name of the file containing the cross sections for your data")
-
-parser.add_argument('-v','--value',default='M4L', choices=list(lhe2root_methods.beautified_title.keys()),
-                    help="The attributes you want to plot.")
-
-parser.add_argument('-r','--range', default=(6,9), type=ran,
-                    help='The ranges for your attributes. Enclose your ranges with quotes and a leading space i.e. " -3.14,3.14"')
-
-parser.add_argument('-n', '--nbins', type=int, default=100,
-                    help="The number of bins")
-
-parser.add_argument('-no', '--norm', action="store_true",
-                    help="Option to normalize the area of the histogram to 1")
-
-parser.add_argument('-t', '--titles', default="", nargs="+",
-                    help="Optional Figure Title")
-
-args = parser.parse_args()
-
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-f', '--filenames',nargs=3, action="append", required=True,
+                        help="The file you want to plot. Order them as <Interference file> <signal1> <signal2>")
+
+    parser.add_argument('-l', '--labels', nargs=2, type=str, required=True,
+                        help="The names of both your signals")
+
+    parser.add_argument('-csf', '--crossSectionFile', default="CrossSections.csv",
+                        help="The name of the file containing the cross sections for your data")
+
+    parser.add_argument('-v','--value',default='M4L', choices=list(lhe_constants.beautified_title.keys()),
+                        help="The attributes you want to plot.")
+
+    parser.add_argument('-r','--range', default=(6,9), type=ran,
+                        help='The ranges for your attributes. Enclose your ranges with quotes and a leading space i.e. " -3.14,3.14"')
+
+    parser.add_argument('-n', '--nbins', type=int, default=100,
+                        help="The number of bins")
+
+    parser.add_argument('-no', '--norm', action="store_true",
+                        help="Option to normalize the area of the histogram to 1")
+
+    parser.add_argument('-t', '--titles', default="", nargs="+",
+                        help="Optional Figure Title")
+
+    args = parser.parse_args()
     
     interf_plots = {}
     
