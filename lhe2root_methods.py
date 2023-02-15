@@ -73,7 +73,7 @@ def check_for_MELA():
     return True
 
 
-def recursively_convert(current_directory, argument, clean=False, verbose=False, exceptions=set(), write=""):
+def recursively_convert(current_directory, output_directory, argument, clean=False, verbose=False, exceptions=set(), write=""):
     """This function will recurse through every directory and subdirectory in the place you call it, 
     and attempt to convert those files to ROOT files using lhe2root
 
@@ -93,6 +93,12 @@ def recursively_convert(current_directory, argument, clean=False, verbose=False,
     Returns:
         Returns a dictionary with the cross section/uncertainty pairs for every file
     """
+    
+    if output_directory[-1] != '/':
+        output_directory += '/'
+    
+    if not os.path.isdir(output_directory):
+        raise FileNotFoundError(output_directory + " is not a directory!")
     
     cross_sections = {}
     
@@ -125,7 +131,7 @@ def recursively_convert(current_directory, argument, clean=False, verbose=False,
         else:
             output_filename = 'LHE_' + candidate_filename + '.root'
             
-            running_str = "python lhe2root.py --" + argument + " " + current_directory + '/' + output_filename + ' '
+            running_str = "python3 lhe2root.py --" + argument + " " + output_directory + output_filename + ' '
             running_str += candidate
             
             if not verbose:
@@ -140,7 +146,7 @@ def recursively_convert(current_directory, argument, clean=False, verbose=False,
             number_events = len(lhefile_methods.get_all_events(candidate))
             
             lhe_constants.print_msg_box("Input name: " + candidate.split('/')[-1] + #This is the big message box seen per LHE file found
-                "\nOutput name: " + output_filename + 
+                "\nOutput: " + str(os.path.relpath(output_directory + output_filename)) + 
                 "\nArgument: " + argument + 
                 "\n\u03C3: " + cross_section + " \u00b1 " + uncertainty + 
                 "\nN: " + "{:e}".format(number_events) + " events",
@@ -149,7 +155,7 @@ def recursively_convert(current_directory, argument, clean=False, verbose=False,
             os.system(running_str)
     
     if write:
-        with open(write, "w+") as f:
+        with open(output_directory + write, "w+") as f:
             f.write("Filename, Cross Section, Uncertainty\n")
             for fname, (crosssection, uncertainty) in cross_sections.items():
                 f.write(fname + ', ' + crosssection + ', ' + uncertainty + '\n')

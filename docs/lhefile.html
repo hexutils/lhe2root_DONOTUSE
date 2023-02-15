@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lhefile module &mdash; lhe2root  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            lhe2root
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">lhefile module</a><ul>
+<li><a class="reference internal" href="#lhefile.InputEvent"><code class="docutils literal notranslate"><span class="pre">InputEvent</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.InputEvent.associated"><code class="docutils literal notranslate"><span class="pre">InputEvent.associated</span></code></a></li>
+<li><a class="reference internal" href="#lhefile.InputEvent.daughters"><code class="docutils literal notranslate"><span class="pre">InputEvent.daughters</span></code></a></li>
+<li><a class="reference internal" href="#lhefile.InputEvent.isgen"><code class="docutils literal notranslate"><span class="pre">InputEvent.isgen</span></code></a></li>
+<li><a class="reference internal" href="#lhefile.InputEvent.mothers"><code class="docutils literal notranslate"><span class="pre">InputEvent.mothers</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEEvent"><code class="docutils literal notranslate"><span class="pre">LHEEvent</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEEvent.extracteventparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent.extracteventparticles()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_Hwithdecay"><code class="docutils literal notranslate"><span class="pre">LHEEvent_Hwithdecay</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEEvent_Hwithdecay.extracteventparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_Hwithdecay.extracteventparticles()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_HwithdecayOnly"><code class="docutils literal notranslate"><span class="pre">LHEEvent_HwithdecayOnly</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEEvent_HwithdecayOnly.extracteventparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_HwithdecayOnly.extracteventparticles()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_JHUGenVBFVH"><code class="docutils literal notranslate"><span class="pre">LHEEvent_JHUGenVBFVH</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEEvent_JHUGenVBFVH.nassociatedparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_JHUGenVBFVH.nassociatedparticles</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_JHUGenttH"><code class="docutils literal notranslate"><span class="pre">LHEEvent_JHUGenttH</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEEvent_JHUGenttH.nassociatedparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_JHUGenttH.nassociatedparticles</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_Offshell4l"><code class="docutils literal notranslate"><span class="pre">LHEEvent_Offshell4l</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEEvent_Offshell4l.extracteventparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_Offshell4l.extracteventparticles()</span></code></a></li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_Offshell4l.nassociatedparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_Offshell4l.nassociatedparticles</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_StableHiggs"><code class="docutils literal notranslate"><span class="pre">LHEEvent_StableHiggs</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEEvent_StableHiggs.extracteventparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_StableHiggs.extracteventparticles()</span></code></a></li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_StableHiggs.nassociatedparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_StableHiggs.nassociatedparticles</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_StableHiggsVH"><code class="docutils literal notranslate"><span class="pre">LHEEvent_StableHiggsVH</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEEvent_StableHiggsVH.extracteventparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_StableHiggsVH.extracteventparticles()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_StableHiggsZHHAWK"><code class="docutils literal notranslate"><span class="pre">LHEEvent_StableHiggsZHHAWK</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEEvent_StableHiggsZHHAWK.extracteventparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_StableHiggsZHHAWK.extracteventparticles()</span></code></a></li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_StableHiggsZHHAWK.nassociatedparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_StableHiggsZHHAWK.nassociatedparticles</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEEvent_VHHiggsdecay"><code class="docutils literal notranslate"><span class="pre">LHEEvent_VHHiggsdecay</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEEvent_VHHiggsdecay.extracteventparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_VHHiggsdecay.extracteventparticles()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEFileBase"><code class="docutils literal notranslate"><span class="pre">LHEFileBase</span></code></a></li>
+<li><a class="reference internal" href="#lhefile.LHEFile_Hwithdecay"><code class="docutils literal notranslate"><span class="pre">LHEFile_Hwithdecay</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEFile_Hwithdecay.lheeventclass"><code class="docutils literal notranslate"><span class="pre">LHEFile_Hwithdecay.lheeventclass</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEFile_HwithdecayOnly"><code class="docutils literal notranslate"><span class="pre">LHEFile_HwithdecayOnly</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEFile_HwithdecayOnly.lheeventclass"><code class="docutils literal notranslate"><span class="pre">LHEFile_HwithdecayOnly.lheeventclass</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEFile_JHUGenVBFVH"><code class="docutils literal notranslate"><span class="pre">LHEFile_JHUGenVBFVH</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEFile_JHUGenVBFVH.lheeventclass"><code class="docutils literal notranslate"><span class="pre">LHEFile_JHUGenVBFVH.lheeventclass</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEFile_JHUGenttH"><code class="docutils literal notranslate"><span class="pre">LHEFile_JHUGenttH</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEFile_JHUGenttH.lheeventclass"><code class="docutils literal notranslate"><span class="pre">LHEFile_JHUGenttH.lheeventclass</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEFile_Offshell4l"><code class="docutils literal notranslate"><span class="pre">LHEFile_Offshell4l</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEFile_Offshell4l.lheeventclass"><code class="docutils literal notranslate"><span class="pre">LHEFile_Offshell4l.lheeventclass</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEFile_StableHiggs"><code class="docutils literal notranslate"><span class="pre">LHEFile_StableHiggs</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEFile_StableHiggs.lheeventclass"><code class="docutils literal notranslate"><span class="pre">LHEFile_StableHiggs.lheeventclass</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEFile_StableHiggsVH"><code class="docutils literal notranslate"><span class="pre">LHEFile_StableHiggsVH</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEFile_StableHiggsVH.lheeventclass"><code class="docutils literal notranslate"><span class="pre">LHEFile_StableHiggsVH.lheeventclass</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEFile_StableHiggsZHHAWK"><code class="docutils literal notranslate"><span class="pre">LHEFile_StableHiggsZHHAWK</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEFile_StableHiggsZHHAWK.lheeventclass"><code class="docutils literal notranslate"><span class="pre">LHEFile_StableHiggsZHHAWK.lheeventclass</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lhefile.LHEFile_VHHiggsdecay"><code class="docutils literal notranslate"><span class="pre">LHEFile_VHHiggsdecay</span></code></a><ul>
+<li><a class="reference internal" href="#lhefile.LHEFile_VHHiggsdecay.lheeventclass"><code class="docutils literal notranslate"><span class="pre">LHEFile_VHHiggsdecay.lheeventclass</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+    <a href="index.html">Home Page</a>
+    <a href="genindex.html">Index</a>
+    <a href="py-modindex.html">Module Index</a>
+    <a href="https://github.com/hexutils/lhe2root">Github Page</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">lhe2root</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">lhefile module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/lhefile.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-lhefile">
+<span id="lhefile-module"></span><h1>lhefile module<a class="headerlink" href="#module-lhefile" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.InputEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">InputEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">daughters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">associated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mothers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhefile.InputEvent" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<p>Create new instance of InputEvent(daughters, associated, mothers, isgen)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.InputEvent.associated">
+<span class="sig-name descname"><span class="pre">associated</span></span><a class="headerlink" href="#lhefile.InputEvent.associated" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.InputEvent.daughters">
+<span class="sig-name descname"><span class="pre">daughters</span></span><a class="headerlink" href="#lhefile.InputEvent.daughters" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.InputEvent.isgen">
+<span class="sig-name descname"><span class="pre">isgen</span></span><a class="headerlink" href="#lhefile.InputEvent.isgen" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.InputEvent.mothers">
+<span class="sig-name descname"><span class="pre">mothers</span></span><a class="headerlink" href="#lhefile.InputEvent.mothers" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lhefile.LHEEvent.extracteventparticles">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extracteventparticles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent.extracteventparticles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent.extracteventparticles" title="Permalink to this definition"></a></dt>
+<dd><p>has to be a classmethod that returns daughters, associated, mothers</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_Hwithdecay">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEEvent_Hwithdecay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_Hwithdecay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_Hwithdecay" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEEvent" title="lhefile.LHEEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_Hwithdecay.extracteventparticles">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extracteventparticles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_Hwithdecay.extracteventparticles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_Hwithdecay.extracteventparticles" title="Permalink to this definition"></a></dt>
+<dd><p>has to be a classmethod that returns daughters, associated, mothers</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_HwithdecayOnly">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEEvent_HwithdecayOnly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_HwithdecayOnly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_HwithdecayOnly" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEEvent" title="lhefile.LHEEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_HwithdecayOnly.extracteventparticles">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extracteventparticles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_HwithdecayOnly.extracteventparticles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_HwithdecayOnly.extracteventparticles" title="Permalink to this definition"></a></dt>
+<dd><p>has to be a classmethod that returns daughters, associated, mothers</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_JHUGenVBFVH">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEEvent_JHUGenVBFVH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_JHUGenVBFVH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_JHUGenVBFVH" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEEvent_StableHiggs" title="lhefile.LHEEvent_StableHiggs"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_StableHiggs</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_JHUGenVBFVH.nassociatedparticles">
+<span class="sig-name descname"><span class="pre">nassociatedparticles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#lhefile.LHEEvent_JHUGenVBFVH.nassociatedparticles" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_JHUGenttH">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEEvent_JHUGenttH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_JHUGenttH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_JHUGenttH" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEEvent_StableHiggs" title="lhefile.LHEEvent_StableHiggs"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_StableHiggs</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_JHUGenttH.nassociatedparticles">
+<span class="sig-name descname"><span class="pre">nassociatedparticles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#lhefile.LHEEvent_JHUGenttH.nassociatedparticles" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_Offshell4l">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEEvent_Offshell4l</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_Offshell4l"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_Offshell4l" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEEvent" title="lhefile.LHEEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_Offshell4l.extracteventparticles">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extracteventparticles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_Offshell4l.extracteventparticles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_Offshell4l.extracteventparticles" title="Permalink to this definition"></a></dt>
+<dd><p>has to be a classmethod that returns daughters, associated, mothers</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_Offshell4l.nassociatedparticles">
+<span class="sig-name descname"><span class="pre">nassociatedparticles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#lhefile.LHEEvent_Offshell4l.nassociatedparticles" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_StableHiggs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEEvent_StableHiggs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_StableHiggs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_StableHiggs" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEEvent" title="lhefile.LHEEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_StableHiggs.extracteventparticles">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extracteventparticles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_StableHiggs.extracteventparticles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_StableHiggs.extracteventparticles" title="Permalink to this definition"></a></dt>
+<dd><p>has to be a classmethod that returns daughters, associated, mothers</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_StableHiggs.nassociatedparticles">
+<span class="sig-name descname"><span class="pre">nassociatedparticles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#lhefile.LHEEvent_StableHiggs.nassociatedparticles" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_StableHiggsVH">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEEvent_StableHiggsVH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_StableHiggsVH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_StableHiggsVH" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEEvent" title="lhefile.LHEEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_StableHiggsVH.extracteventparticles">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extracteventparticles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_StableHiggsVH.extracteventparticles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_StableHiggsVH.extracteventparticles" title="Permalink to this definition"></a></dt>
+<dd><p>has to be a classmethod that returns daughters, associated, mothers</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_StableHiggsZHHAWK">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEEvent_StableHiggsZHHAWK</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_StableHiggsZHHAWK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_StableHiggsZHHAWK" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEEvent" title="lhefile.LHEEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_StableHiggsZHHAWK.extracteventparticles">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extracteventparticles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_StableHiggsZHHAWK.extracteventparticles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_StableHiggsZHHAWK.extracteventparticles" title="Permalink to this definition"></a></dt>
+<dd><p>has to be a classmethod that returns daughters, associated, mothers</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_StableHiggsZHHAWK.nassociatedparticles">
+<span class="sig-name descname"><span class="pre">nassociatedparticles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#lhefile.LHEEvent_StableHiggsZHHAWK.nassociatedparticles" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_VHHiggsdecay">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEEvent_VHHiggsdecay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_VHHiggsdecay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_VHHiggsdecay" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEEvent" title="lhefile.LHEEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lhefile.LHEEvent_VHHiggsdecay.extracteventparticles">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extracteventparticles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEEvent_VHHiggsdecay.extracteventparticles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEEvent_VHHiggsdecay.extracteventparticles" title="Permalink to this definition"></a></dt>
+<dd><p>has to be a classmethod that returns daughters, associated, mothers</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEFileBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEFileBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">melaargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEFileBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEFileBase" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Simple class to iterate through an LHE file and calculate probabilities for each event
+Example usage:
+h1 = ROOT.TH1F(“costheta1”, “costheta1”, 100, -1, 1)
+h2 = ROOT.TH1F(“D_0minus”, “D_0minus”, 100, 0, 1)
+with LHEFile(“filename.lhe”) as f:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>for event in f:  #event becomes the mela object</dt><dd><p>h1.Fill(event.computeDecayAngles().costheta1)
+event.ghz1 = 1
+p0plus = event.computeP()
+event.ghz4 = 1
+p0minus = event.computeP()
+h2.Fill(p0plus / (p0plus + p0minus))</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEFile_Hwithdecay">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEFile_Hwithdecay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">melaargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEFile_Hwithdecay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEFile_Hwithdecay" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEFileBase" title="lhefile.LHEFileBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEFileBase</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEFile_Hwithdecay.lheeventclass">
+<span class="sig-name descname"><span class="pre">lheeventclass</span></span><a class="headerlink" href="#lhefile.LHEFile_Hwithdecay.lheeventclass" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#lhefile.LHEEvent_Hwithdecay" title="lhefile.LHEEvent_Hwithdecay"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_Hwithdecay</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEFile_HwithdecayOnly">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEFile_HwithdecayOnly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">melaargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEFile_HwithdecayOnly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEFile_HwithdecayOnly" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEFileBase" title="lhefile.LHEFileBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEFileBase</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEFile_HwithdecayOnly.lheeventclass">
+<span class="sig-name descname"><span class="pre">lheeventclass</span></span><a class="headerlink" href="#lhefile.LHEFile_HwithdecayOnly.lheeventclass" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#lhefile.LHEEvent_HwithdecayOnly" title="lhefile.LHEEvent_HwithdecayOnly"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_HwithdecayOnly</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEFile_JHUGenVBFVH">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEFile_JHUGenVBFVH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">melaargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEFile_JHUGenVBFVH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEFile_JHUGenVBFVH" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEFileBase" title="lhefile.LHEFileBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEFileBase</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEFile_JHUGenVBFVH.lheeventclass">
+<span class="sig-name descname"><span class="pre">lheeventclass</span></span><a class="headerlink" href="#lhefile.LHEFile_JHUGenVBFVH.lheeventclass" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#lhefile.LHEEvent_JHUGenVBFVH" title="lhefile.LHEEvent_JHUGenVBFVH"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_JHUGenVBFVH</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEFile_JHUGenttH">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEFile_JHUGenttH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">melaargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEFile_JHUGenttH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEFile_JHUGenttH" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEFileBase" title="lhefile.LHEFileBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEFileBase</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEFile_JHUGenttH.lheeventclass">
+<span class="sig-name descname"><span class="pre">lheeventclass</span></span><a class="headerlink" href="#lhefile.LHEFile_JHUGenttH.lheeventclass" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#lhefile.LHEEvent_JHUGenttH" title="lhefile.LHEEvent_JHUGenttH"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_JHUGenttH</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEFile_Offshell4l">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEFile_Offshell4l</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">melaargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEFile_Offshell4l"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEFile_Offshell4l" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEFileBase" title="lhefile.LHEFileBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEFileBase</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEFile_Offshell4l.lheeventclass">
+<span class="sig-name descname"><span class="pre">lheeventclass</span></span><a class="headerlink" href="#lhefile.LHEFile_Offshell4l.lheeventclass" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#lhefile.LHEEvent_Offshell4l" title="lhefile.LHEEvent_Offshell4l"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_Offshell4l</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEFile_StableHiggs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEFile_StableHiggs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">melaargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEFile_StableHiggs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEFile_StableHiggs" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEFileBase" title="lhefile.LHEFileBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEFileBase</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEFile_StableHiggs.lheeventclass">
+<span class="sig-name descname"><span class="pre">lheeventclass</span></span><a class="headerlink" href="#lhefile.LHEFile_StableHiggs.lheeventclass" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#lhefile.LHEEvent_StableHiggs" title="lhefile.LHEEvent_StableHiggs"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_StableHiggs</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEFile_StableHiggsVH">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEFile_StableHiggsVH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">melaargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEFile_StableHiggsVH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEFile_StableHiggsVH" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEFileBase" title="lhefile.LHEFileBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEFileBase</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEFile_StableHiggsVH.lheeventclass">
+<span class="sig-name descname"><span class="pre">lheeventclass</span></span><a class="headerlink" href="#lhefile.LHEFile_StableHiggsVH.lheeventclass" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#lhefile.LHEEvent_StableHiggsVH" title="lhefile.LHEEvent_StableHiggsVH"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_StableHiggsVH</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEFile_StableHiggsZHHAWK">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEFile_StableHiggsZHHAWK</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">melaargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEFile_StableHiggsZHHAWK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEFile_StableHiggsZHHAWK" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEFileBase" title="lhefile.LHEFileBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEFileBase</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEFile_StableHiggsZHHAWK.lheeventclass">
+<span class="sig-name descname"><span class="pre">lheeventclass</span></span><a class="headerlink" href="#lhefile.LHEFile_StableHiggsZHHAWK.lheeventclass" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#lhefile.LHEEvent_StableHiggsZHHAWK" title="lhefile.LHEEvent_StableHiggsZHHAWK"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_StableHiggsZHHAWK</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lhefile.LHEFile_VHHiggsdecay">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile.</span></span><span class="sig-name descname"><span class="pre">LHEFile_VHHiggsdecay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">melaargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile.html#LHEFile_VHHiggsdecay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile.LHEFile_VHHiggsdecay" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lhefile.LHEFileBase" title="lhefile.LHEFileBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEFileBase</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lhefile.LHEFile_VHHiggsdecay.lheeventclass">
+<span class="sig-name descname"><span class="pre">lheeventclass</span></span><a class="headerlink" href="#lhefile.LHEFile_VHHiggsdecay.lheeventclass" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#lhefile.LHEEvent_VHHiggsdecay" title="lhefile.LHEEvent_VHHiggsdecay"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHEEvent_VHHiggsdecay</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, HexUtils.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

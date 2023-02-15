@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lhefile &mdash; lhe2root  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            lhe2root
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+    <a href="index.html">Home Page</a>
+    <a href="genindex.html">Index</a>
+    <a href="py-modindex.html">Module Index</a>
+    <a href="https://github.com/hexutils/lhe2root">Github Page</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">lhe2root</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">lhefile</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lhefile</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+  <span class="kn">import</span> <span class="nn">argparse</span><span class="o">,</span> <span class="nn">itertools</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">unittest</span>
+  <span class="kn">from</span> <span class="nn">.mela</span> <span class="kn">import</span> <span class="n">TVar</span>
+  <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+  <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--lhefile-hwithdecay&#39;</span><span class="p">)</span>
+  <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--lhefile-hwithdecayonly&#39;</span><span class="p">)</span>  
+  <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--lhefile-jhugenvbfvh&#39;</span><span class="p">)</span>
+  <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--lhefile-jhugentth&#39;</span><span class="p">)</span>
+  <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;unittest_args&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+  <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">ROOT</span>
+
+<span class="kn">from</span> <span class="nn">mela</span> <span class="kn">import</span> <span class="n">Mela</span><span class="p">,</span> <span class="n">SimpleParticle_t</span><span class="p">,</span> <span class="n">SimpleParticleCollection_t</span>
+
+<span class="n">InputEvent</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;InputEvent&quot;</span><span class="p">,</span> <span class="s2">&quot;daughters associated mothers isgen&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LHEEvent"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">isgen</span><span class="p">):</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+      <span class="k">if</span> <span class="s2">&quot;&lt;wgt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span> <span class="k">continue</span>
+      <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;&lt;wgt id=&#39;(.*)&#39;&gt;([0-9+Ee.-]*)&lt;/wgt&gt;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">match</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">&quot;&lt;&quot;</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">or</span> <span class="s2">&quot;&gt;&quot;</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())]</span>
+    <span class="n">nparticles</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="n">nparticles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nparticles</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nparticles</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong number of particles! Should be </span><span class="si">{}</span><span class="s2">, have </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nparticles</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">daughters</span><span class="p">,</span> <span class="n">associated</span><span class="p">,</span> <span class="n">mothers</span> <span class="o">=</span> <span class="p">(</span><span class="n">SimpleParticleCollection_t</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extracteventparticles</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">isgen</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">(</span><span class="n">mothers</span><span class="p">):</span> <span class="n">mothers</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">daughters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">associated</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mothers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">isgen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputevent</span> <span class="o">=</span> <span class="n">InputEvent</span><span class="p">(</span><span class="n">daughters</span><span class="p">,</span> <span class="n">associated</span><span class="p">,</span> <span class="n">mothers</span><span class="p">,</span> <span class="n">isgen</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LHEEvent.extracteventparticles"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent.extracteventparticles">[docs]</a>  <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+  <span class="k">def</span> <span class="nf">extracteventparticles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">isgen</span><span class="p">):</span> <span class="s2">&quot;has to be a classmethod that returns daughters, associated, mothers&quot;</span></div>
+
+  <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputevent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LHEEvent_Hwithdecay"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_Hwithdecay">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent_Hwithdecay</span><span class="p">(</span><span class="n">LHEEvent</span><span class="p">):</span>
+<div class="viewcode-block" id="LHEEvent_Hwithdecay.extracteventparticles"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_Hwithdecay.extracteventparticles">[docs]</a>  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">extracteventparticles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">isgen</span><span class="p">):</span>
+    <span class="n">daughters</span><span class="p">,</span> <span class="n">mothers</span><span class="p">,</span> <span class="n">associated</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">mother1s</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">mother2s</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+      <span class="nb">id</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">mother1</span><span class="p">,</span> <span class="n">mother2</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+      <span class="n">ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+      <span class="k">if</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">6</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">==</span> <span class="mi">21</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1">#replace the first instance of the jet id with 0, which means unknown jet</span>
+      <span class="n">mother1s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mother1</span><span class="p">)</span>
+      <span class="n">mother2s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mother2</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">mothers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">6</span> <span class="ow">or</span> <span class="mi">11</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">16</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">)):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+          <span class="k">if</span> <span class="n">mother1</span> <span class="o">!=</span> <span class="n">mother2</span> <span class="ow">or</span> <span class="n">mother1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">associated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">break</span>
+          <span class="k">if</span> <span class="n">ids</span><span class="p">[</span><span class="n">mother1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">39</span><span class="p">):</span>
+            <span class="n">daughters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">break</span>
+          <span class="n">mother2</span> <span class="o">=</span> <span class="n">mother2s</span><span class="p">[</span><span class="n">mother1</span><span class="p">]</span>
+          <span class="n">mother1</span> <span class="o">=</span> <span class="n">mother1s</span><span class="p">[</span><span class="n">mother1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span> <span class="n">mothers</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">daughters</span><span class="p">,</span> <span class="n">associated</span><span class="p">,</span> <span class="n">mothers</span></div></div>
+
+
+<div class="viewcode-block" id="LHEEvent_VHHiggsdecay"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_VHHiggsdecay">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent_VHHiggsdecay</span><span class="p">(</span><span class="n">LHEEvent</span><span class="p">):</span>
+<div class="viewcode-block" id="LHEEvent_VHHiggsdecay.extracteventparticles"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_VHHiggsdecay.extracteventparticles">[docs]</a>  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">extracteventparticles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">isgen</span><span class="p">):</span>
+    <span class="n">daughters</span><span class="p">,</span> <span class="n">mothers</span><span class="p">,</span> <span class="n">associated</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">mother1s</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">mother2s</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+      <span class="nb">id</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">mother1</span><span class="p">,</span> <span class="n">mother2</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+      <span class="n">ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+      
+      <span class="c1">#if (1 &lt;= abs(id) &lt;= 6 or abs(id) == 21) and not isgen:</span>
+      <span class="c1">#  line = line.replace(str(id), &quot;0&quot;, 1)  #replace the first instance of the jet id with 0, which means unknown jet</span>
+      <span class="n">mother1s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mother1</span><span class="p">)</span>
+      <span class="n">mother2s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mother2</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">mothers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">6</span> <span class="ow">or</span> <span class="mi">11</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">16</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">)):</span>
+        
+          <span class="k">if</span> <span class="n">mother1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">mother1s</span><span class="p">[</span><span class="n">mother1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
+            <span class="c1">#associated.append(line)</span>
+            <span class="k">continue</span>
+          
+          <span class="k">if</span> <span class="n">mother1</span> <span class="o">==</span> <span class="n">mother2</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ids</span><span class="p">[</span><span class="n">mother1</span><span class="p">])</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">)</span> <span class="ow">and</span>  <span class="ow">not</span> <span class="n">ids</span><span class="p">[</span><span class="n">mother1s</span><span class="p">[</span><span class="n">mother1</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">25</span> <span class="p">:</span>
+            <span class="n">associated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            
+          
+          <span class="k">if</span> <span class="n">mother1</span> <span class="o">==</span> <span class="n">mother2</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ids</span><span class="p">[</span><span class="n">mother1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">23</span> <span class="ow">and</span>  <span class="n">ids</span><span class="p">[</span><span class="n">mother1s</span><span class="p">[</span><span class="n">mother1</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">25</span><span class="p">:</span>
+            <span class="n">daughters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span> <span class="n">mothers</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">daughters</span><span class="p">,</span> <span class="n">associated</span><span class="p">,</span> <span class="n">mothers</span></div></div>
+
+
+  
+<div class="viewcode-block" id="LHEEvent_HwithdecayOnly"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_HwithdecayOnly">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent_HwithdecayOnly</span><span class="p">(</span><span class="n">LHEEvent</span><span class="p">):</span>
+<div class="viewcode-block" id="LHEEvent_HwithdecayOnly.extracteventparticles"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_HwithdecayOnly.extracteventparticles">[docs]</a>  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">extracteventparticles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">isgen</span><span class="p">):</span>
+    <span class="n">daughters</span><span class="p">,</span> <span class="n">mothers</span><span class="p">,</span> <span class="n">associated</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">mother1s</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">mother2s</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+      <span class="nb">id</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">mother1</span><span class="p">,</span> <span class="n">mother2</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+      <span class="n">ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+      <span class="k">if</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">6</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">==</span> <span class="mi">21</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1">#replace the first instance of the jet id with 0, which means unknown jet</span>
+      <span class="n">mother1s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mother1</span><span class="p">)</span>
+      <span class="n">mother2s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mother2</span><span class="p">)</span>
+      <span class="k">if</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">==</span> <span class="mi">22</span> <span class="p">):</span>
+        <span class="n">associated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="c1">#1 &lt;= abs(id) &lt;= 6 or</span>
+      <span class="k">if</span> <span class="p">(</span> <span class="mi">11</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">16</span> <span class="p">):</span>
+          <span class="n">daughters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+          <span class="c1">#if args.merge_photon:</span>
+          <span class="c1">#  print line</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span> <span class="n">mothers</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">daughters</span><span class="p">,</span> <span class="n">associated</span><span class="p">,</span> <span class="n">mothers</span></div></div>
+
+
+
+  
+<div class="viewcode-block" id="LHEEvent_StableHiggs"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_StableHiggs">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent_StableHiggs</span><span class="p">(</span><span class="n">LHEEvent</span><span class="p">):</span>
+<div class="viewcode-block" id="LHEEvent_StableHiggs.extracteventparticles"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_StableHiggs.extracteventparticles">[docs]</a>  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">extracteventparticles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">isgen</span><span class="p">):</span>
+    <span class="n">daughters</span><span class="p">,</span> <span class="n">mothers</span><span class="p">,</span> <span class="n">associated</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+      <span class="nb">id</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">mother1</span><span class="p">,</span> <span class="n">mother2</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+      <span class="k">if</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">6</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">==</span> <span class="mi">21</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1">#replace the first instance of the jet id with 0, which means unknown jet</span>
+      <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">mothers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="k">if</span> <span class="nb">id</span> <span class="o">==</span> <span class="mi">25</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+          <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Higgs has status </span><span class="si">{}</span><span class="s2">, expected it to be 1</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+        <span class="n">daughters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">associated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">daughters</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;More than one H in the event??</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">nassociatedparticles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">associated</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">nassociatedparticles</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong number of associated particles (expected </span><span class="si">{}</span><span class="s2">, found </span><span class="si">{}</span><span class="s2">)</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">nassociatedparticles</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">associated</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mothers</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> mothers in the event??</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mothers</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span> <span class="n">mothers</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">daughters</span><span class="p">,</span> <span class="n">associated</span><span class="p">,</span> <span class="n">mothers</span></div>
+
+  <span class="n">nassociatedparticles</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="LHEEvent_StableHiggsVH"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_StableHiggsVH">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent_StableHiggsVH</span><span class="p">(</span><span class="n">LHEEvent</span><span class="p">):</span>
+<div class="viewcode-block" id="LHEEvent_StableHiggsVH.extracteventparticles"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_StableHiggsVH.extracteventparticles">[docs]</a>  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">extracteventparticles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">isgen</span><span class="p">):</span>
+    <span class="n">daughters</span><span class="p">,</span> <span class="n">mothers</span><span class="p">,</span> <span class="n">associated</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">mother1s</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">mother2s</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+      <span class="nb">id</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">mother1</span><span class="p">,</span> <span class="n">mother2</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+      <span class="n">ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+
+      <span class="c1">#if (1 &lt;= abs(id) &lt;= 6 or abs(id) == 21) and not isgen:</span>
+      <span class="c1">#  line = line.replace(str(id), &quot;0&quot;, 1)  #replace the first instance of the jet id with 0, which means unknown jet</span>
+      <span class="n">mother1s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mother1</span><span class="p">)</span>
+      <span class="n">mother2s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mother2</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">mothers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="nb">id</span> <span class="o">==</span> <span class="mi">25</span><span class="p">:</span>
+        <span class="n">daughters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">6</span> <span class="ow">or</span> <span class="mi">11</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">16</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">)):</span>
+
+          <span class="k">if</span> <span class="n">mother1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">mother1s</span><span class="p">[</span><span class="n">mother1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
+            <span class="c1">#associated.append(line)</span>
+            <span class="k">continue</span>
+
+          <span class="k">if</span> <span class="n">mother1</span> <span class="o">==</span> <span class="n">mother2</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ids</span><span class="p">[</span><span class="n">mother1</span><span class="p">])</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">[</span><span class="n">mother1s</span><span class="p">[</span><span class="n">mother1</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">25</span> <span class="p">:</span>
+            <span class="n">associated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+ 
+          <span class="c1">#elif mother1!= mother2:</span>
+            <span class="c1">#associated.append(line)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span> <span class="n">mothers</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">daughters</span><span class="p">,</span> <span class="n">associated</span><span class="p">,</span> <span class="n">mothers</span></div></div>
+
+
+<div class="viewcode-block" id="LHEEvent_StableHiggsZHHAWK"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_StableHiggsZHHAWK">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent_StableHiggsZHHAWK</span><span class="p">(</span><span class="n">LHEEvent</span><span class="p">):</span>
+<div class="viewcode-block" id="LHEEvent_StableHiggsZHHAWK.extracteventparticles"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_StableHiggsZHHAWK.extracteventparticles">[docs]</a>  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">extracteventparticles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">isgen</span><span class="p">):</span>
+    <span class="n">daughters</span><span class="p">,</span> <span class="n">mothers</span><span class="p">,</span> <span class="n">associated</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+      <span class="nb">id</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">mother1</span><span class="p">,</span> <span class="n">mother2</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+      <span class="k">if</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">6</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">==</span> <span class="mi">21</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1">#replace the first instance of the jet id with 0, which means unknown jet</span>
+      <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">mothers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="k">if</span> <span class="nb">id</span> <span class="o">==</span> <span class="mi">25</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+          <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Higgs has status </span><span class="si">{}</span><span class="s2">, expected it to be 1</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+        <span class="n">daughters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span><span class="mi">22</span><span class="p">)</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">associated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">daughters</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;More than one H in the event??</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">nassociatedparticles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">associated</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">nassociatedparticles</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong number of associated particles (expected </span><span class="si">{}</span><span class="s2">, found </span><span class="si">{}</span><span class="s2">)</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">nassociatedparticles</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">associated</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mothers</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> mothers in the event??</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mothers</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span> <span class="n">mothers</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">daughters</span><span class="p">,</span> <span class="n">associated</span><span class="p">,</span> <span class="n">mothers</span></div>
+
+  <span class="n">nassociatedparticles</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+  
+<div class="viewcode-block" id="LHEEvent_JHUGenVBFVH"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_JHUGenVBFVH">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent_JHUGenVBFVH</span><span class="p">(</span><span class="n">LHEEvent_StableHiggs</span><span class="p">):</span>
+  <span class="n">nassociatedparticles</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="LHEEvent_JHUGenttH"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_JHUGenttH">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent_JHUGenttH</span><span class="p">(</span><span class="n">LHEEvent_StableHiggs</span><span class="p">):</span>
+  <span class="n">nassociatedparticles</span> <span class="o">=</span> <span class="mi">6</span></div>
+
+<div class="viewcode-block" id="LHEEvent_Offshell4l"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_Offshell4l">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent_Offshell4l</span><span class="p">(</span><span class="n">LHEEvent</span><span class="p">):</span>
+<div class="viewcode-block" id="LHEEvent_Offshell4l.extracteventparticles"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEEvent_Offshell4l.extracteventparticles">[docs]</a>  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">extracteventparticles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">isgen</span><span class="p">):</span>
+    <span class="n">daughters</span><span class="p">,</span> <span class="n">mothers</span><span class="p">,</span> <span class="n">associated</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+      <span class="nb">id</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">mother1</span><span class="p">,</span> <span class="n">mother2</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+      <span class="k">if</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">6</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">==</span> <span class="mi">21</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1">#replace the first instance of the jet id with 0, which means unknown jet</span>
+      <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">mothers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">daughters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+      <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">associated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">daughters</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong number of daughters (expected </span><span class="si">{}</span><span class="s2">, found </span><span class="si">{}</span><span class="s2">)</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">daughters</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">nassociatedparticles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">associated</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">nassociatedparticles</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong number of associated particles (expected </span><span class="si">{}</span><span class="s2">, found </span><span class="si">{}</span><span class="s2">)</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">nassociatedparticles</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">associated</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mothers</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> mothers in the event??</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mothers</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isgen</span><span class="p">:</span> <span class="n">mothers</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">daughters</span><span class="p">,</span> <span class="n">associated</span><span class="p">,</span> <span class="n">mothers</span></div>
+
+  <span class="n">nassociatedparticles</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="LHEFileBase"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEFileBase">[docs]</a><span class="k">class</span> <span class="nc">LHEFileBase</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Simple class to iterate through an LHE file and calculate probabilities for each event</span>
+<span class="sd">  Example usage:</span>
+<span class="sd">  h1 = ROOT.TH1F(&quot;costheta1&quot;, &quot;costheta1&quot;, 100, -1, 1)</span>
+<span class="sd">  h2 = ROOT.TH1F(&quot;D_0minus&quot;, &quot;D_0minus&quot;, 100, 0, 1)</span>
+<span class="sd">  with LHEFile(&quot;filename.lhe&quot;) as f:</span>
+<span class="sd">    for event in f:  #event becomes the mela object</span>
+<span class="sd">      h1.Fill(event.computeDecayAngles().costheta1)</span>
+<span class="sd">      event.ghz1 = 1</span>
+<span class="sd">      p0plus = event.computeP()</span>
+<span class="sd">      event.ghz4 = 1</span>
+<span class="sd">      p0minus = event.computeP()</span>
+<span class="sd">      h2.Fill(p0plus / (p0plus + p0minus))</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="n">__melas</span> <span class="o">=</span> <span class="p">{}</span>
+
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="n">melaargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">isgen</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;isgen&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">reusemela</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;reusemela&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">gzip</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown kwargs: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+    <span class="k">if</span> <span class="n">reusemela</span> <span class="ow">and</span> <span class="n">melaargs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__melas</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">mela</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__melas</span><span class="p">[</span><span class="n">melaargs</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">__melas</span><span class="p">[</span><span class="n">melaargs</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mela</span> <span class="o">=</span> <span class="n">Mela</span><span class="p">(</span><span class="o">*</span><span class="n">melaargs</span><span class="p">)</span>
+
+    <span class="n">openfunction</span> <span class="o">=</span> <span class="nb">open</span>
+    <span class="k">if</span> <span class="n">gzip</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">gzip</span> <span class="kn">import</span> <span class="n">GzipFile</span> <span class="k">as</span> <span class="n">openfunction</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">openfunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+  <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span>
+  <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">linenumber</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+      <span class="k">if</span> <span class="s2">&quot;&lt;event&gt;&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">event</span><span class="p">:</span>
+        <span class="k">continue</span>
+      <span class="n">event</span> <span class="o">+=</span> <span class="n">line</span>
+      <span class="k">if</span> <span class="s2">&quot;&lt;/event&gt;&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">_setInputEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+          <span class="k">yield</span> <span class="bp">self</span>
+          <span class="n">event</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">except</span> <span class="ne">GeneratorExit</span><span class="p">:</span>
+          <span class="k">raise</span>
+        <span class="k">except</span><span class="p">:</span>
+          <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;On line&quot;</span><span class="p">,</span> <span class="n">linenumber</span><span class="p">)</span>
+          <span class="k">raise</span>
+        <span class="k">finally</span><span class="p">:</span>
+          <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mela</span><span class="o">.</span><span class="n">resetInputEvent</span><span class="p">()</span>
+          <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+  <span class="k">def</span> <span class="nf">_setInputEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="n">lheevent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lheeventclass</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">isgen</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">daughters</span> <span class="o">=</span> <span class="n">lheevent</span><span class="o">.</span><span class="n">daughters</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">associated</span> <span class="o">=</span> <span class="n">lheevent</span><span class="o">.</span><span class="n">associated</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mothers</span> <span class="o">=</span> <span class="n">lheevent</span><span class="o">.</span><span class="n">mothers</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">lheevent</span><span class="o">.</span><span class="n">weight</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">lheevent</span><span class="o">.</span><span class="n">weights</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setInputEvent</span><span class="p">(</span><span class="o">*</span><span class="n">lheevent</span><span class="p">)</span>
+
+  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">_LHEclassattributes</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;mela&quot;</span><span class="p">,</span> <span class="s2">&quot;isgen&quot;</span><span class="p">,</span> <span class="s2">&quot;daughters&quot;</span><span class="p">,</span> <span class="s2">&quot;mothers&quot;</span><span class="p">,</span> <span class="s2">&quot;associated&quot;</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span>
+
+  <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;mela&quot;</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Something is wrong, trying to access mela before it&#39;s created&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mela</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+  <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LHEclassattributes</span><span class="p">():</span>
+      <span class="nb">super</span><span class="p">(</span><span class="n">LHEFileBase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mela</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LHEFile_Hwithdecay"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEFile_Hwithdecay">[docs]</a><span class="k">class</span> <span class="nc">LHEFile_Hwithdecay</span><span class="p">(</span><span class="n">LHEFileBase</span><span class="p">):</span>
+  <span class="n">lheeventclass</span> <span class="o">=</span> <span class="n">LHEEvent_Hwithdecay</span></div>
+<div class="viewcode-block" id="LHEFile_HwithdecayOnly"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEFile_HwithdecayOnly">[docs]</a><span class="k">class</span> <span class="nc">LHEFile_HwithdecayOnly</span><span class="p">(</span><span class="n">LHEFileBase</span><span class="p">):</span>
+  <span class="n">lheeventclass</span> <span class="o">=</span> <span class="n">LHEEvent_HwithdecayOnly</span></div>
+<div class="viewcode-block" id="LHEFile_StableHiggs"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEFile_StableHiggs">[docs]</a><span class="k">class</span> <span class="nc">LHEFile_StableHiggs</span><span class="p">(</span><span class="n">LHEFileBase</span><span class="p">):</span>
+  <span class="n">lheeventclass</span> <span class="o">=</span> <span class="n">LHEEvent_StableHiggs</span></div>
+<div class="viewcode-block" id="LHEFile_StableHiggsVH"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEFile_StableHiggsVH">[docs]</a><span class="k">class</span> <span class="nc">LHEFile_StableHiggsVH</span><span class="p">(</span><span class="n">LHEFileBase</span><span class="p">):</span>
+  <span class="n">lheeventclass</span> <span class="o">=</span> <span class="n">LHEEvent_StableHiggsVH</span></div>
+<div class="viewcode-block" id="LHEFile_StableHiggsZHHAWK"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEFile_StableHiggsZHHAWK">[docs]</a><span class="k">class</span> <span class="nc">LHEFile_StableHiggsZHHAWK</span><span class="p">(</span><span class="n">LHEFileBase</span><span class="p">):</span>
+  <span class="n">lheeventclass</span> <span class="o">=</span> <span class="n">LHEEvent_StableHiggsZHHAWK</span></div>
+<div class="viewcode-block" id="LHEFile_JHUGenVBFVH"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEFile_JHUGenVBFVH">[docs]</a><span class="k">class</span> <span class="nc">LHEFile_JHUGenVBFVH</span><span class="p">(</span><span class="n">LHEFileBase</span><span class="p">):</span>
+  <span class="n">lheeventclass</span> <span class="o">=</span> <span class="n">LHEEvent_JHUGenVBFVH</span></div>
+<div class="viewcode-block" id="LHEFile_JHUGenttH"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEFile_JHUGenttH">[docs]</a><span class="k">class</span> <span class="nc">LHEFile_JHUGenttH</span><span class="p">(</span><span class="n">LHEFileBase</span><span class="p">):</span>
+  <span class="n">lheeventclass</span> <span class="o">=</span> <span class="n">LHEEvent_JHUGenttH</span></div>
+<div class="viewcode-block" id="LHEFile_Offshell4l"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEFile_Offshell4l">[docs]</a><span class="k">class</span> <span class="nc">LHEFile_Offshell4l</span><span class="p">(</span><span class="n">LHEFileBase</span><span class="p">):</span>
+  <span class="n">lheeventclass</span> <span class="o">=</span> <span class="n">LHEEvent_Offshell4l</span></div>
+<div class="viewcode-block" id="LHEFile_VHHiggsdecay"><a class="viewcode-back" href="../lhefile.html#lhefile.LHEFile_VHHiggsdecay">[docs]</a><span class="k">class</span> <span class="nc">LHEFile_VHHiggsdecay</span><span class="p">(</span><span class="n">LHEFileBase</span><span class="p">):</span>
+  <span class="n">lheeventclass</span> <span class="o">=</span> <span class="n">LHEEvent_VHHiggsdecay</span></div>
+  
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+  <span class="k">class</span> <span class="nc">TestLHEFiles</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skipUnless</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">lhefile_hwithdecay</span><span class="p">,</span> <span class="s2">&quot;needs --lhefile-hwithdecay argument&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">testHwithDecay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+      <span class="k">with</span> <span class="n">LHEFile_Hwithdecay</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">lhefile_hwithdecay</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))):</span>
+          <span class="n">event</span><span class="o">.</span><span class="n">ghz1</span> <span class="o">=</span> <span class="mi">1</span>
+          <span class="n">event</span><span class="o">.</span><span class="n">setProcess</span><span class="p">(</span><span class="n">TVar</span><span class="o">.</span><span class="n">SelfDefine_spin0</span><span class="p">,</span> <span class="n">TVar</span><span class="o">.</span><span class="n">JHUGen</span><span class="p">,</span> <span class="n">TVar</span><span class="o">.</span><span class="n">ZZINDEPENDENT</span><span class="p">)</span>
+          <span class="n">prob</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">computeP</span><span class="p">()</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+          <span class="nb">print</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">computeDecayAngles</span><span class="p">())</span>
+
+    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skipUnless</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">lhefile_jhugenvbfvh</span><span class="p">,</span> <span class="s2">&quot;needs --lhefile-jhugenvbfvh argument&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">testJHUGenVBFVH</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+      <span class="k">with</span> <span class="n">LHEFile_JHUGenVBFVH</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">lhefile_jhugenvbfvh</span><span class="p">,</span> <span class="n">isgen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))):</span>
+          <span class="n">event</span><span class="o">.</span><span class="n">ghz1</span> <span class="o">=</span> <span class="mi">1</span>
+          <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="mi">11</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">first</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">16</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">associated</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">first</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">associated</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+              <span class="n">VHprocess</span> <span class="o">=</span> <span class="n">TVar</span><span class="o">.</span><span class="n">Lep_ZH</span>
+              <span class="n">event</span><span class="o">.</span><span class="n">setProcess</span><span class="p">(</span><span class="n">TVar</span><span class="o">.</span><span class="n">SelfDefine_spin0</span><span class="p">,</span> <span class="n">TVar</span><span class="o">.</span><span class="n">JHUGen</span><span class="p">,</span> <span class="n">TVar</span><span class="o">.</span><span class="n">Lep_ZH</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+              <span class="n">VHprocess</span> <span class="o">=</span> <span class="n">TVar</span><span class="o">.</span><span class="n">Lep_WH</span>
+              <span class="n">event</span><span class="o">.</span><span class="n">setProcess</span><span class="p">(</span><span class="n">TVar</span><span class="o">.</span><span class="n">SelfDefine_spin0</span><span class="p">,</span> <span class="n">TVar</span><span class="o">.</span><span class="n">JHUGen</span><span class="p">,</span> <span class="n">TVar</span><span class="o">.</span><span class="n">Lep_WH</span><span class="p">)</span>
+          <span class="k">else</span><span class="p">:</span>
+            <span class="n">VHprocess</span> <span class="o">=</span> <span class="n">TVar</span><span class="o">.</span><span class="n">Had_ZH</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">setProcess</span><span class="p">(</span><span class="n">TVar</span><span class="o">.</span><span class="n">SelfDefine_spin0</span><span class="p">,</span> <span class="n">TVar</span><span class="o">.</span><span class="n">JHUGen</span><span class="p">,</span> <span class="n">TVar</span><span class="o">.</span><span class="n">JJVBF</span><span class="p">)</span>
+          <span class="n">prob</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">computeProdP</span><span class="p">()</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+          <span class="nb">print</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">computeVBFAngles</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">computeVHAngles</span><span class="p">(</span><span class="n">VHprocess</span><span class="p">))</span>
+
+    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skipUnless</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">lhefile_jhugentth</span><span class="p">,</span> <span class="s2">&quot;needs --lhefile-jhugentth argument&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">testJHUGenttH</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+      <span class="k">with</span> <span class="n">LHEFile_JHUGenttH</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">lhefile_jhugentth</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))):</span>
+          <span class="k">pass</span>
+
+  <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">+</span><span class="n">args</span><span class="o">.</span><span class="n">unittest_args</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, HexUtils.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

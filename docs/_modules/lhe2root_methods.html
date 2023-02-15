@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lhe2root_methods &mdash; lhe2root  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            lhe2root
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+    <a href="index.html">Home Page</a>
+    <a href="genindex.html">Index</a>
+    <a href="py-modindex.html">Module Index</a>
+    <a href="https://github.com/hexutils/lhe2root">Github Page</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">lhe2root</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">lhe2root_methods</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lhe2root_methods</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">uproot</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">mplhep</span> <span class="k">as</span> <span class="nn">hep</span>
+<span class="kn">import</span> <span class="nn">lhe_constants</span>
+<span class="kn">import</span> <span class="nn">lhefile_methods</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">hep</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">ROOT</span><span class="p">)</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;xaxis.labellocation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;center&#39;</span>
+
+<div class="viewcode-block" id="scale"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.scale">[docs]</a><span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">scaleto</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function scales histograms according to their absolute area under the curve (no negatives allowed!)</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        counts -- A list of bin counts</span>
+<span class="sd">        scaleto -- The absolute area to scale to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The scaled histogram</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">signs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span> <span class="c1">#makes sure to preserve sign</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">signs</span><span class="o">*</span><span class="n">counts</span><span class="o">*</span><span class="n">scaleto</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_cross_section_from_LHE_file"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.get_cross_section_from_LHE_file">[docs]</a><span class="k">def</span> <span class="nf">get_cross_section_from_LHE_file</span><span class="p">(</span><span class="n">LHE_file_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the cross section and its uncertainty from a given LHE file using regular expressions</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        LHE_file_path -- The file path for the LHE file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A tuple of strings containing the cross section and its uncertainty</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">cross_section</span> <span class="o">=</span> <span class="n">uncertainty</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">LHE_file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">getting_cross_section</span><span class="p">:</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="n">getting_cross_section</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        
+        <span class="c1">#This regex was made by the very very helpful https://pythex.org/ (shoutout professor Upsorn Praphamontripong)</span>
+        <span class="n">cross_finder</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&lt;init&gt;\n.+\n.+(\d+\.\d+E(\+|-)\d</span><span class="si">{2}</span><span class="s1">)\s+(\d+\.\d+E(\+|-)\d</span><span class="si">{2}</span><span class="s1">)\s+(\d+\.\d+E(\+|-)\d</span><span class="si">{2}</span><span class="s1">)(\d|\s)+&lt;/init&gt;&#39;</span><span class="p">)</span>
+        <span class="n">cross_section_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">cross_finder</span><span class="p">,</span><span class="n">head</span><span class="p">)</span>
+        
+        <span class="n">cross_section</span> <span class="o">=</span> <span class="n">cross_section_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="n">uncertainty</span> <span class="o">=</span> <span class="n">cross_section_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">cross_section</span><span class="p">,</span> <span class="n">uncertainty</span> <span class="c1">#returns the cross section and its uncertainty        </span></div>
+
+<div class="viewcode-block" id="check_for_MELA"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.check_for_MELA">[docs]</a><span class="k">def</span> <span class="nf">check_for_MELA</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A simple function that checks whether or not you have the environment variables for MELA set up within your terminal</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A boolean as to whether or not MELA is properly set up</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;LD_LIBRARY_PATH&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span> <span class="c1">#this library path is set up by the MELA setup script</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MELA environment variables have not been set up correctly&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;HexUtils&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Run &#39;./install.sh&#39; in the directory above HexUtils to set these up!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Run &#39;./setup.sh&#39; in the MELA directory to set these up!&quot;</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="kc">False</span>
+    
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="recursively_convert"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.recursively_convert">[docs]</a><span class="k">def</span> <span class="nf">recursively_convert</span><span class="p">(</span><span class="n">current_directory</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">write</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function will recurse through every directory and subdirectory in the place you call it, </span>
+<span class="sd">    and attempt to convert those files to ROOT files using lhe2root</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        current_directory -- The directory to start recursing downwards from</span>
+<span class="sd">        argument -- the lhe2root argument to use (see lhe_2_root_options at the top of the file)</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        clean -- If True, this function will wipe any old conversion and re-convert the files (default: {False})</span>
+<span class="sd">        verbose -- If true, the function will be verbose (default: {False})</span>
+<span class="sd">        exceptions -- Any absolute path with this string in it will be ignored(default: {set()})</span>
+<span class="sd">            NOTE: This is the case for any string in the path! folders of path &lt;exception&gt;/&lt;other folder&gt; will be ignored</span>
+<span class="sd">            The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!</span>
+<span class="sd">            Name your folders carefully!</span>
+<span class="sd">        write -- If a string, this will be the file that you will write the cross sections to. The file will be comma-separated</span>
+<span class="sd">            </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Returns a dictionary with the cross section/uncertainty pairs for every file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="n">output_directory</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
+        <span class="n">output_directory</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">output_directory</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">output_directory</span> <span class="o">+</span> <span class="s2">&quot; is not a directory!&quot;</span><span class="p">)</span>
+    
+    <span class="n">cross_sections</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">current_directory</span><span class="p">):</span>
+        <span class="c1"># print(candidate)</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fsdecode</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+        
+        <span class="n">candidate_filename</span> <span class="o">=</span> <span class="n">candidate</span><span class="p">[:</span><span class="n">candidate</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)]</span>
+                
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">current_directory</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">candidate</span>
+        <span class="c1"># print(candidate)</span>
+        
+        <span class="n">is_exempt</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">exemption</span> <span class="ow">in</span> <span class="n">exceptions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">exemption</span> <span class="ow">in</span> <span class="n">candidate</span><span class="p">:</span>
+                <span class="n">is_exempt</span> <span class="o">=</span> <span class="kc">True</span>
+        
+        
+        <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">candidate</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_exempt</span><span class="p">):</span> <span class="c1">#convert all the LHE files in every directory below you</span>
+            <span class="n">one_folder_below</span> <span class="o">=</span> <span class="n">recursively_convert</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">clean</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span>
+            <span class="n">cross_sections</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">one_folder_below</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;lhe&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">clean</span> <span class="ow">and</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">[</span><span class="s1">&#39;.&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.root&#39;</span><span class="p">:</span>
+                <span class="n">lhe_constants</span><span class="o">.</span><span class="n">print_msg_box</span><span class="p">(</span><span class="s2">&quot;Removing &quot;</span> <span class="o">+</span> <span class="n">candidate</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Cleaning directory &quot;</span> <span class="o">+</span> <span class="n">current_directory</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+                
+            <span class="k">continue</span>
+        
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">output_filename</span> <span class="o">=</span> <span class="s1">&#39;LHE_&#39;</span> <span class="o">+</span> <span class="n">candidate_filename</span> <span class="o">+</span> <span class="s1">&#39;.root&#39;</span>
+            
+            <span class="n">running_str</span> <span class="o">=</span> <span class="s2">&quot;python3 lhe2root.py --&quot;</span> <span class="o">+</span> <span class="n">argument</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">output_directory</span> <span class="o">+</span> <span class="n">output_filename</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+            <span class="n">running_str</span> <span class="o">+=</span> <span class="n">candidate</span>
+            
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="n">running_str</span> <span class="o">+=</span> <span class="s1">&#39; &gt; /dev/null 2&gt;&amp;1&#39;</span>
+            
+            <span class="n">cross_section</span><span class="p">,</span> <span class="n">uncertainty</span> <span class="o">=</span> <span class="n">get_cross_section_from_LHE_file</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span> <span class="c1">#these are currently strings!</span>
+            
+            <span class="n">cross_sections</span><span class="p">[</span><span class="n">current_directory</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">output_filename</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">cross_section</span><span class="p">,</span> <span class="n">uncertainty</span><span class="p">)</span>
+            
+            <span class="n">titlestr</span> <span class="o">=</span> <span class="s2">&quot;Generating ROOT file for ./&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+            
+            <span class="n">number_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lhefile_methods</span><span class="o">.</span><span class="n">get_all_events</span><span class="p">(</span><span class="n">candidate</span><span class="p">))</span>
+            
+            <span class="n">lhe_constants</span><span class="o">.</span><span class="n">print_msg_box</span><span class="p">(</span><span class="s2">&quot;Input name: &quot;</span> <span class="o">+</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="c1">#This is the big message box seen per LHE file found</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Output: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">output_directory</span> <span class="o">+</span> <span class="n">output_filename</span><span class="p">))</span> <span class="o">+</span> 
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Argument: &quot;</span> <span class="o">+</span> <span class="n">argument</span> <span class="o">+</span> 
+                <span class="s2">&quot;</span><span class="se">\n\u03C3</span><span class="s2">: &quot;</span> <span class="o">+</span> <span class="n">cross_section</span> <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\u00b1</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="n">uncertainty</span> <span class="o">+</span> 
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">N: &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">number_events</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; events&quot;</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="n">titlestr</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">titlestr</span><span class="p">))</span>
+            
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">running_str</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_directory</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Filename, Cross Section, Uncertainty</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="p">(</span><span class="n">crosssection</span><span class="p">,</span> <span class="n">uncertainty</span><span class="p">)</span> <span class="ow">in</span> <span class="n">cross_sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fname</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">crosssection</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">uncertainty</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                
+    <span class="k">return</span> <span class="n">cross_sections</span></div>
+
+
+
+<div class="viewcode-block" id="plot_one_quantity"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.plot_one_quantity">[docs]</a><span class="k">def</span> <span class="nf">plot_one_quantity</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">xrange</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[],</span> <span class="n">norm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function plots one quantity of your choice from a ROOT file!</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        filenames -- The ROOT files you are plotting from</span>
+<span class="sd">        attribute -- The TBranches you are plotting (the files should have the same names for branches)</span>
+<span class="sd">        xrange -- The range for your x axis for this attribute</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        nbins -- The number of bins. This can either be a number or a list (default: {100})</span>
+<span class="sd">        labels -- The labels for each file plotted (default: {[]})</span>
+<span class="sd">        norm -- Whether to normalize the plotting areas to 1 for easier comparison (default: {False})</span>
+<span class="sd">        title -- An extra &quot;title&quot; on the x label that is concatenated (default: {&quot;&quot;})</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If your list of labels and list of filenames are not the same length</span>
+<span class="sd">        ValueError: If you choose a column that is undefined</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary of NumPy style histogram tuple of counts and bins with the filename as the key</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;labels and files should be the same length!&quot;</span><span class="p">)</span>
+    
+    <span class="n">histograms</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">filenames</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">uproot</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">arrays</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s1">&#39;pd&#39;</span><span class="p">)</span>
+            
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You can only choose from these attributes:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
+            
+            <span class="n">hist_counts</span><span class="p">,</span> <span class="n">hist_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">xrange</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">nbins</span><span class="p">)</span>
+            
+            <span class="n">histograms</span><span class="p">[</span><span class="n">file</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">hist_counts</span><span class="p">,</span> <span class="n">hist_bins</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">norm</span><span class="p">:</span>
+                <span class="n">hist_counts</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">hist_counts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                
+            <span class="k">if</span> <span class="n">labels</span><span class="p">:</span>
+                <span class="n">hep</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">hist_counts</span><span class="p">,</span> <span class="n">hist_bins</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hep</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">hist_counts</span><span class="p">,</span> <span class="n">hist_bins</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xrange</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">lhe_constants</span><span class="o">.</span><span class="n">beautified_title</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">beautified_title</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">+</span> <span class="n">title</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">attribute</span> <span class="o">+</span> <span class="n">title</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+                
+    <span class="k">if</span> <span class="n">labels</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">histograms</span></div>
+
+
+<div class="viewcode-block" id="plot_interference"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.plot_interference">[docs]</a><span class="k">def</span> <span class="nf">plot_interference</span><span class="p">(</span><span class="n">mixed_file</span><span class="p">,</span> <span class="n">pure1</span><span class="p">,</span> <span class="n">pure2</span><span class="p">,</span> <span class="n">pure1Name</span><span class="p">,</span> <span class="n">pure2Name</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">cross_sections</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plots the interference between two samples given a file containing a mixture of the two, and two &quot;pure&quot; samples</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        mixed_file -- The file containing a simulation of pure1 and pure2 together</span>
+<span class="sd">        pure1 -- Just one of the two items (no mixing)</span>
+<span class="sd">        pure2 -- Just the other of the two items (no mixing)</span>
+<span class="sd">        pure1Name -- The name for what this sample is called</span>
+<span class="sd">        pure2Name -- The name for what this sample is called</span>
+<span class="sd">        attribute -- The thing you are plotting (i.e. M4L, phi, etc.)</span>
+<span class="sd">        cross_sections -- A dictionary containing the cross sections of each file in the following format: </span>
+<span class="sd">            {filename: cross section}</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        nbins -- The number of bins for your plot. This can either be an integer or a list of bins (default: {100})</span>
+<span class="sd">        title -- An extra &quot;title&quot; on the x label that is concatenated (default: {&quot;&quot;})</span>
+<span class="sd">        </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The interference portion between the three plots</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">mixed_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">mixed_file</span><span class="p">)</span>
+    <span class="n">pure1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">pure1</span><span class="p">)</span>
+    <span class="n">pure2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">pure2</span><span class="p">)</span>
+    
+    <span class="n">interf_sample</span> <span class="o">=</span> <span class="n">BW1_sample</span> <span class="o">=</span> <span class="n">BW2_sample</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    
+    <span class="k">with</span> <span class="n">uproot</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mixed_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">interf</span><span class="p">:</span> <span class="c1">#Opening all of these in the same statement might cause memory issues. So here we are!</span>
+        <span class="n">interf_sample</span> <span class="o">=</span> <span class="n">interf</span><span class="p">[</span><span class="n">interf</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">arrays</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s1">&#39;pd&#39;</span><span class="p">)</span>
+        
+    <span class="k">if</span> <span class="n">attribute</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">interf_sample</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">return</span>
+        
+    <span class="k">with</span> <span class="n">uproot</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">pure1</span><span class="p">)</span> <span class="k">as</span> <span class="n">rawBW1</span><span class="p">:</span>
+        <span class="n">BW1_sample</span> <span class="o">=</span> <span class="n">rawBW1</span><span class="p">[</span><span class="n">rawBW1</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">arrays</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s1">&#39;pd&#39;</span><span class="p">)</span>
+        
+    <span class="k">with</span> <span class="n">uproot</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">pure2</span><span class="p">)</span> <span class="k">as</span> <span class="n">rawBW2</span><span class="p">:</span>
+        <span class="n">BW2_sample</span> <span class="o">=</span> <span class="n">rawBW2</span><span class="p">[</span><span class="n">rawBW2</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">arrays</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s1">&#39;pd&#39;</span><span class="p">)</span>
+        
+    
+    <span class="n">interf_hist</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">interf_sample</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">nbins</span><span class="p">)</span>
+    <span class="n">BW1_hist</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">BW1_sample</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    <span class="n">BW2_hist</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">BW2_sample</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    
+    <span class="c1"># print(&#39;%E&#39; % CrossSections[pure1][0], &#39;%E&#39; % CrossSections[pure2][0], &#39;%E&#39; % np.sqrt(CrossSections[pure1][0]*CrossSections[pure2][0])</span>
+    <span class="c1">#     , &#39;%E&#39; % CrossSections[mixed_file][0])</span>
+    
+    <span class="n">interf_hist</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">interf_hist</span><span class="p">,</span> <span class="n">cross_sections</span><span class="p">[</span><span class="n">mixed_file</span><span class="p">])</span>
+    <span class="n">BW1_hist</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">BW1_hist</span><span class="p">,</span> <span class="n">cross_sections</span><span class="p">[</span><span class="n">pure1</span><span class="p">])</span>
+    <span class="n">BW2_hist</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">BW2_hist</span><span class="p">,</span> <span class="n">cross_sections</span><span class="p">[</span><span class="n">pure2</span><span class="p">])</span>
+    
+    <span class="n">interf_actual</span> <span class="o">=</span> <span class="n">interf_hist</span> <span class="o">-</span> <span class="n">BW1_hist</span> <span class="o">-</span> <span class="n">BW2_hist</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="n">hep</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">BW1_hist</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">pure1Name</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hep</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">BW2_hist</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">pure2Name</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hep</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">interf_hist</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">pure1Name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">pure2Name</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># print(interf_hist)</span>
+    
+    <span class="n">hep</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">interf_actual</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">pure1Name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">pure2Name</span> <span class="o">+</span> <span class="s1">&#39; Interference&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">beautified_title</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">title</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">interf_actual</span><span class="p">,</span> <span class="n">bins</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, HexUtils.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
