@@ -44,9 +44,6 @@ ranges = { #a dictionary of ranges to make your life easier!
     'MZ2':[3,3.2]
 }
 
-event_selection_regex = re.compile(r'(?s)(<event>(.*?)</event>)') #regular expression to find every event
-
-
 def print_msg_box(msg, indent=1, width=0, title=""):
     """Print message-box with optional title.
     Ripped from https://stackoverflow.com/questions/39969064/how-to-print-a-message-box-in-python

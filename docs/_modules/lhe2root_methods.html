@@ -126,6 +126,8 @@
     
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">LHE_file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">getting_cross_section</span><span class="p">:</span>
         <span class="n">head</span> <span class="o">=</span> <span class="n">getting_cross_section</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">head</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">LHE_file_path</span> <span class="o">+</span> <span class="s2">&quot; is empty!&quot;</span><span class="p">)</span>
         
         <span class="c1">#This regex was made by the very very helpful https://pythex.org/ (shoutout professor Upsorn Praphamontripong)</span>
         <span class="n">cross_finder</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&lt;init&gt;\n.+\n.+(\d+\.\d+E(\+|-)\d</span><span class="si">{2}</span><span class="s1">)\s+(\d+\.\d+E(\+|-)\d</span><span class="si">{2}</span><span class="s1">)\s+(\d+\.\d+E(\+|-)\d</span><span class="si">{2}</span><span class="s1">)(\d|\s)+&lt;/init&gt;&#39;</span><span class="p">)</span>
@@ -176,8 +178,8 @@
 <span class="sd">    exceptions : set, optional</span>
 <span class="sd">        Any absolute path with this string in it will be ignored, by default set()</span>
 <span class="sd">        NOTE: This is the case for any string in the path! folders of path &lt;exception&gt;/&lt;other folder&gt; will be ignored</span>
-<span class="sd">            The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!</span>
-<span class="sd">            Name your folders carefully!</span>
+<span class="sd">        The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!</span>
+<span class="sd">        Name your folders carefully!</span>
 <span class="sd">    write : str, optional</span>
 <span class="sd">        If a string, this will be the file that you will write the cross sections to. The file will be comma-separated, by default &quot;&quot;</span>
 
@@ -191,7 +193,6 @@
 <span class="sd">    FileNotFoundError</span>
 <span class="sd">        If the output directory is not found/not a directory raises an error</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
     <span class="k">if</span> <span class="n">output_directory</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
         <span class="n">output_directory</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span>
     
@@ -216,7 +217,7 @@
         
         
         <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">candidate</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_exempt</span><span class="p">):</span> <span class="c1">#convert all the LHE files in every directory below you</span>
-            <span class="n">one_folder_below</span> <span class="o">=</span> <span class="n">recursively_convert</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">clean</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span>
+            <span class="n">one_folder_below</span> <span class="o">=</span> <span class="n">recursively_convert</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">clean</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span>
             <span class="n">cross_sections</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">one_folder_below</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;lhe&#39;</span><span class="p">:</span>
@@ -241,7 +242,9 @@
             
             <span class="n">titlestr</span> <span class="o">=</span> <span class="s2">&quot;Generating ROOT file for ./&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
             
-            <span class="n">number_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lhefile_methods</span><span class="o">.</span><span class="n">get_all_events</span><span class="p">(</span><span class="n">candidate</span><span class="p">))</span>
+            <span class="n">lhe_reader</span> <span class="o">=</span> <span class="n">lhefile_methods</span><span class="o">.</span><span class="n">lhe_reader</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+            
+            <span class="n">number_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lhe_reader</span><span class="o">.</span><span class="n">all_events</span><span class="p">)</span>
             
             <span class="n">lhe_constants</span><span class="o">.</span><span class="n">print_msg_box</span><span class="p">(</span><span class="s2">&quot;Input name: &quot;</span> <span class="o">+</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="c1">#This is the big message box seen per LHE file found</span>
                 <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Output: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">output_directory</span> <span class="o">+</span> <span class="n">output_filename</span><span class="p">))</span> <span class="o">+</span> 
@@ -262,7 +265,8 @@
 
 
 
-<div class="viewcode-block" id="plot_one_quantity"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.plot_one_quantity">[docs]</a><span class="k">def</span> <span class="nf">plot_one_quantity</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">xrange</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[],</span> <span class="n">norm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_one_quantity"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.plot_one_quantity">[docs]</a><span class="k">def</span> <span class="nf">plot_one_quantity</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">xrange</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[],</span> <span class="n">norm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> 
+                      <span class="n">cuts</span><span class="o">=</span><span class="p">{}):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This function plots one quantity of your choice from ROOT files!</span>
 
 <span class="sd">    Parameters</span>
@@ -281,7 +285,8 @@
 <span class="sd">        Whether to normalize the plotting areas to 1 for easier comparison, by default False</span>
 <span class="sd">    title : str, optional</span>
 <span class="sd">        An extra &quot;title&quot; on the x label that is concatenated, by default &quot;&quot;</span>
-
+<span class="sd">    cuts : dict</span>
+<span class="sd">        A dictionary containing the upper and lower level cuts that you are making on each quantity, by default {}</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
@@ -305,6 +310,10 @@
             <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">arrays</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s1">&#39;pd&#39;</span><span class="p">)</span>
             
             <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">quan</span><span class="p">,</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="c1"># print(cut)</span>
+                    <span class="c1"># print(f.query(quan + &#39; &gt; @cut[0]&#39;))</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">quan</span> <span class="o">+</span> <span class="s1">&#39; &gt; @cut[0] &amp; &#39;</span> <span class="o">+</span> <span class="n">quan</span> <span class="o">+</span> <span class="s1">&#39; &lt; @cut[1]&#39;</span><span class="p">)</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You can only choose from these attributes:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
@@ -332,6 +341,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
         
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">attribute</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     
     <span class="k">return</span> <span class="n">histograms</span></div>
@@ -417,6 +427,32 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     
     <span class="k">return</span> <span class="n">interf_actual</span><span class="p">,</span> <span class="n">bins</span></div>
+
+
+<div class="viewcode-block" id="cut_ranges_to_dict"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.cut_ranges_to_dict">[docs]</a><span class="k">def</span> <span class="nf">cut_ranges_to_dict</span><span class="p">(</span><span class="n">cut_ranges</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes in cut ranges of triples of style &lt;name&gt;, &lt;upper bound&gt;, &lt;lower bound&gt;</span>
+<span class="sd">    singular plotting can use. Styled such that a dot indicates that there is no cut.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cut_ranges : list[list[Union[str, float]]]</span>
+<span class="sd">        the list of triples generated by args.cut</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary of style &lt;cut name&gt;: (&lt;upper bound&gt;, &lt;lower bound&gt;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cut_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="ow">in</span> <span class="n">cut_ranges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">lower</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+            <span class="n">lower</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="k">if</span> <span class="n">upper</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+            <span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        
+        <span class="n">cut_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">cut_dict</span></div>
 </pre></div>
 
            </div>

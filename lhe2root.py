@@ -3,7 +3,15 @@ import abc
 import collections
 import re
 import argparse, os
+from array import array
+import itertools
+import numpy as np
 
+import ROOT
+
+from lhefile import LHEFile_JHUGenVBFVH, LHEFile_Hwithdecay, LHEFile_VHHiggsdecay,LHEFile_HwithdecayOnly, LHEFile_Offshell4l,LHEFile_StableHiggs,LHEFile_StableHiggsZHHAWK,LHEFile_StableHiggsVH
+from mela import Mela, SimpleParticle_t, SimpleParticleCollection_t, TVar
+from pythonmelautils import MultiDimensionalCppArray, SelfDParameter, SelfDCoupling
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
@@ -665,17 +673,6 @@ if __name__ == "__main__":
         os.remove(args.outputfile)
       except:
         pass
-
-
-from array import array
-import itertools
-import numpy as np
-
-import ROOT
-
-from lhefile import LHEFile_JHUGenVBFVH, LHEFile_Hwithdecay, LHEFile_VHHiggsdecay,LHEFile_HwithdecayOnly, LHEFile_Offshell4l,LHEFile_StableHiggs,LHEFile_StableHiggsZHHAWK,LHEFile_StableHiggsVH
-from mela import Mela, SimpleParticle_t, SimpleParticleCollection_t, TVar
-from pythonmelautils import MultiDimensionalCppArray, SelfDParameter, SelfDCoupling
 
 
 def tlvfromptetaphim(pt, eta, phi, m):

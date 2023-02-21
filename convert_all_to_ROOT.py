@@ -35,11 +35,13 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     
+    
     current_directory = args.currentDirectory
     exceptions = set(args.exceptions).union(exceptions)
     
     if not lhe2root_methods.check_for_MELA():
         raise FileNotFoundError("MELA path not found!")
     
-    file_cross_sections = lhe2root_methods.recursively_convert(current_directory, args.output, args.argument, verbose=args.verbose, 
+    file_cross_sections = lhe2root_methods.recursively_convert(current_directory=current_directory, output_directory=args.output, 
+                                                                argument=args.argument, verbose=args.verbose, 
                                                                 exceptions=exceptions, write=args.write)
