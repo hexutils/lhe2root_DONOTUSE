@@ -56,6 +56,7 @@ class lhe_reader(object):
     def all_events(self):
         """This function opens and collects every LHE event and puts them in a list to return
         stores the attribute as a cached property
+        
         Returns
         -------
         list[str]
