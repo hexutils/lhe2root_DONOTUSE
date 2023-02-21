@@ -45,7 +45,6 @@
 <li><a class="reference internal" href="#">lhe2root_methods module</a><ul>
 <li><a class="reference internal" href="#lhe2root_methods.check_for_MELA"><code class="docutils literal notranslate"><span class="pre">check_for_MELA()</span></code></a></li>
 <li><a class="reference internal" href="#lhe2root_methods.cut_ranges_to_dict"><code class="docutils literal notranslate"><span class="pre">cut_ranges_to_dict()</span></code></a></li>
-<li><a class="reference internal" href="#lhe2root_methods.get_cross_section_from_LHE_file"><code class="docutils literal notranslate"><span class="pre">get_cross_section_from_LHE_file()</span></code></a></li>
 <li><a class="reference internal" href="#lhe2root_methods.plot_interference"><code class="docutils literal notranslate"><span class="pre">plot_interference()</span></code></a></li>
 <li><a class="reference internal" href="#lhe2root_methods.plot_one_quantity"><code class="docutils literal notranslate"><span class="pre">plot_one_quantity()</span></code></a></li>
 <li><a class="reference internal" href="#lhe2root_methods.recursively_convert"><code class="docutils literal notranslate"><span class="pre">recursively_convert()</span></code></a></li>
@@ -118,23 +117,6 @@ singular plotting can use. Styled such that a dot indicates that there is no cut
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="lhe2root_methods.get_cross_section_from_LHE_file">
-<span class="sig-prename descclassname"><span class="pre">lhe2root_methods.</span></span><span class="sig-name descname"><span class="pre">get_cross_section_from_LHE_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LHE_file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhe2root_methods.html#get_cross_section_from_LHE_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhe2root_methods.get_cross_section_from_LHE_file" title="Permalink to this definition"></a></dt>
-<dd><p>Gets the cross section and its uncertainty from a given LHE file using regular expressions</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>LHE_file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The file path for the LHE file</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A tuple of strings containing the cross section and its uncertainty</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="lhe2root_methods.plot_interference">
 <span class="sig-prename descclassname"><span class="pre">lhe2root_methods.</span></span><span class="sig-name descname"><span class="pre">plot_interference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixed_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pure1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pure2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pure1Name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pure2Name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cross_sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhe2root_methods.html#plot_interference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhe2root_methods.plot_interference" title="Permalink to this definition"></a></dt>
 <dd><p>Plots the interference between two samples given a file containing a mixture of the two, and two “pure” samples</p>
@@ -195,7 +177,7 @@ singular plotting can use. Styled such that a dot indicates that there is no cut
 
 <dl class="py function">
 <dt class="sig sig-object py" id="lhe2root_methods.recursively_convert">
-<span class="sig-prename descclassname"><span class="pre">lhe2root_methods.</span></span><span class="sig-name descname"><span class="pre">recursively_convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argument</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhe2root_methods.html#recursively_convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhe2root_methods.recursively_convert" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lhe2root_methods.</span></span><span class="sig-name descname"><span class="pre">recursively_convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argument</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LHE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhe2root_methods.html#recursively_convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhe2root_methods.recursively_convert" title="Permalink to this definition"></a></dt>
 <dd><p>This function will recurse through every directory and subdirectory in the place you call it,
 and attempt to convert those files to ROOT files using lhe2root</p>
 <dl class="field-list simple">
@@ -210,6 +192,7 @@ and attempt to convert those files to ROOT files using lhe2root</p>
 NOTE: This is the case for any string in the path! folders of path &lt;exception&gt;/&lt;other folder&gt; will be ignored
 The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!
 Name your folders carefully!</p></li>
+<li><p><strong>outfile_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – The prefix to attach to the generated ROOT files</p></li>
 <li><p><strong>write</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – If a string, this will be the file that you will write the cross sections to. The file will be comma-separated, by default “”</p></li>
 </ul>
 </dd>

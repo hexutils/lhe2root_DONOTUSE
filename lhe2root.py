@@ -13,6 +13,100 @@ from lhefile import LHEFile_JHUGenVBFVH, LHEFile_Hwithdecay, LHEFile_VHHiggsdeca
 from mela import Mela, SimpleParticle_t, SimpleParticleCollection_t, TVar
 from pythonmelautils import MultiDimensionalCppArray, SelfDParameter, SelfDCoupling
 
+def tlvfromptetaphim(pt, eta, phi, m):
+  result = ROOT.TLorentzVector()
+  result.SetPtEtaPhiM(pt, eta, phi, m)
+  return result
+
+class Event(object):
+  doneinit = False
+  def __init__(self, mela, daughters, associated, mothers, isgen, weight=1):
+    self.daughters = daughters
+    self.associated = associated
+    self.mothers = mothers
+    self.isgen = isgen
+    self.weight = weight
+    self.mela = mela
+    self.mela.setInputEvent(daughters, associated, mothers, isgen)
+    self.doneinit = True
+
+  def __getattr__(self, attr):
+    return getattr(self.mela, attr)
+
+  def __setattr__(self, attr, value):
+    if self.doneinit:
+      return setattr(self.mela, attr, value)
+    return super(Event, self).__setattr__(attr, value)
+
+
+
+class LHEEvent(object, metaclass=abc.ABCMeta):
+  def __init__(self, event, isgen):
+    lines = event.split("\n")
+
+    self.weights = {}
+    for line in lines:
+      if "<wgt" not in line: continue
+      match = re.match("<wgt id='(.*)'>([0-9+Ee.-]*)</wgt>", line)
+      if match: self.weights[match.group(1)] = float(match.group(2))
+    lines = [line for line in lines if not ("<" in line or ">" in line or not line.split("#")[0].strip())]
+    nparticles, _, weight, _, _, _ = lines[0].split()
+
+    nparticles = int(nparticles)
+    self.weight = float(weight)
+    if nparticles != len(lines)-1:
+      raise ValueError("Wrong number of particles! Should be {}, have {}".format(nparticles, len(lines)-1))
+
+    daughters, associated, mothers = (SimpleParticleCollection_t(_) for _ in self.extracteventparticles(lines[1:], isgen))
+    if not list(mothers): mothers = None
+    self.daughters, self.associated, self.mothers, self.isgen = self.inputevent = InputEvent(daughters, associated, mothers, isgen)
+
+  @abc.abstractmethod
+  def extracteventparticles(cls, lines, isgen): "has to be a classmethod that returns daughters, associated, mothers"
+
+  def __iter__(self):
+    return iter(self.inputevent)
+
+
+class LHEEvent_Offshell4l(LHEEvent):
+  @classmethod
+  def extracteventparticles(cls, lines, isgen):
+    daughters, mothers, associated = [], [], []
+
+    for line in lines:
+      id, status, mother1, mother2 = (int(_) for _ in line.split()[0:4])
+      if (1 <= abs(id) <= 6 or abs(id) == 21) and not isgen:
+        line = line.replace(str(id), "0", 1)  #replace the first instance of the jet id with 0, which means unknown jet
+      if status == -1:
+        mothers.append(line)
+
+      if ( abs(id) in ( 25) or abs(id) in (25)  ) and status == 1:
+        daughters.append(line)
+        print("added daught")
+        flav4l = flav4l*abs(id)
+
+        #      if ( abs(id) in (11, 12, 13, 14, 15, 16) or abs(id) in (1, 2, 3, 4, 5)  ) and status == 1:
+        #       daughters.append(line)
+        #       flav4l = flav4l*abs(id)
+      #if abs(id) in (0, 1, 2, 3, 4, 5, 21) and status == 1:
+      #  associated.append(line)
+      #if abs(id) in (0, 1, 2, 3, 4, 5, 21) and status == 1:
+      #  associated.append(line)
+
+    #if len(daughters) == 4:
+      #print "flavour comp:",flav4l
+    #if len(daughters) != 4:
+    #  raise ValueError("Wrong number of daughters (expected {}, found {})\n\n".format(4, len(daughters))+"\n".join(lines))
+    if cls.nassociatedparticles is not None and len(associated) != cls.nassociatedparticles:
+      raise ValueError("Wrong number of associated particles (expected {}, found {})\n\n".format(cls.nassociatedparticles, len(associated))+"\n".join(lines))
+    if len(mothers) != 2:
+      raise ValueError("{} mothers in the event??\n\n".format(len(mothers))+"\n".join(lines))
+
+    if not isgen: mothers = None
+    return daughters, associated, mothers
+
+  nassociatedparticles = None
+  
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("outputfile")
@@ -673,98 +767,3 @@ if __name__ == "__main__":
         os.remove(args.outputfile)
       except:
         pass
-
-
-def tlvfromptetaphim(pt, eta, phi, m):
-  result = ROOT.TLorentzVector()
-  result.SetPtEtaPhiM(pt, eta, phi, m)
-  return result
-
-class Event(object):
-  doneinit = False
-  def __init__(self, mela, daughters, associated, mothers, isgen, weight=1):
-    self.daughters = daughters
-    self.associated = associated
-    self.mothers = mothers
-    self.isgen = isgen
-    self.weight = weight
-    self.mela = mela
-    self.mela.setInputEvent(daughters, associated, mothers, isgen)
-    self.doneinit = True
-
-  def __getattr__(self, attr):
-    return getattr(self.mela, attr)
-
-  def __setattr__(self, attr, value):
-    if self.doneinit:
-      return setattr(self.mela, attr, value)
-    return super(Event, self).__setattr__(attr, value)
-
-
-
-class LHEEvent(object, metaclass=abc.ABCMeta):
-  def __init__(self, event, isgen):
-    lines = event.split("\n")
-
-    self.weights = {}
-    for line in lines:
-      if "<wgt" not in line: continue
-      match = re.match("<wgt id='(.*)'>([0-9+Ee.-]*)</wgt>", line)
-      if match: self.weights[match.group(1)] = float(match.group(2))
-    lines = [line for line in lines if not ("<" in line or ">" in line or not line.split("#")[0].strip())]
-    nparticles, _, weight, _, _, _ = lines[0].split()
-
-    nparticles = int(nparticles)
-    self.weight = float(weight)
-    if nparticles != len(lines)-1:
-      raise ValueError("Wrong number of particles! Should be {}, have {}".format(nparticles, len(lines)-1))
-
-    daughters, associated, mothers = (SimpleParticleCollection_t(_) for _ in self.extracteventparticles(lines[1:], isgen))
-    if not list(mothers): mothers = None
-    self.daughters, self.associated, self.mothers, self.isgen = self.inputevent = InputEvent(daughters, associated, mothers, isgen)
-
-  @abc.abstractmethod
-  def extracteventparticles(cls, lines, isgen): "has to be a classmethod that returns daughters, associated, mothers"
-
-  def __iter__(self):
-    return iter(self.inputevent)
-
-
-class LHEEvent_Offshell4l(LHEEvent):
-  @classmethod
-  def extracteventparticles(cls, lines, isgen):
-    daughters, mothers, associated = [], [], []
-
-    for line in lines:
-      id, status, mother1, mother2 = (int(_) for _ in line.split()[0:4])
-      if (1 <= abs(id) <= 6 or abs(id) == 21) and not isgen:
-        line = line.replace(str(id), "0", 1)  #replace the first instance of the jet id with 0, which means unknown jet
-      if status == -1:
-        mothers.append(line)
-
-      if ( abs(id) in ( 25) or abs(id) in (25)  ) and status == 1:
-        daughters.append(line)
-        print("added daught")
-        flav4l = flav4l*abs(id)
-
-        #      if ( abs(id) in (11, 12, 13, 14, 15, 16) or abs(id) in (1, 2, 3, 4, 5)  ) and status == 1:
-        #       daughters.append(line)
-        #       flav4l = flav4l*abs(id)
-      #if abs(id) in (0, 1, 2, 3, 4, 5, 21) and status == 1:
-      #  associated.append(line)
-      #if abs(id) in (0, 1, 2, 3, 4, 5, 21) and status == 1:
-      #  associated.append(line)
-
-    #if len(daughters) == 4:
-      #print "flavour comp:",flav4l
-    #if len(daughters) != 4:
-    #  raise ValueError("Wrong number of daughters (expected {}, found {})\n\n".format(4, len(daughters))+"\n".join(lines))
-    if cls.nassociatedparticles is not None and len(associated) != cls.nassociatedparticles:
-      raise ValueError("Wrong number of associated particles (expected {}, found {})\n\n".format(cls.nassociatedparticles, len(associated))+"\n".join(lines))
-    if len(mothers) != 2:
-      raise ValueError("{} mothers in the event??\n\n".format(len(mothers))+"\n".join(lines))
-
-    if not isgen: mothers = None
-    return daughters, associated, mothers
-
-  nassociatedparticles = None

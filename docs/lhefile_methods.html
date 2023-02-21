@@ -42,16 +42,7 @@
     
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">lhefile_methods module</a><ul>
-<li><a class="reference internal" href="#lhefile_methods.lhe_reader"><code class="docutils literal notranslate"><span class="pre">lhe_reader</span></code></a><ul>
-<li><a class="reference internal" href="#lhefile_methods.lhe_reader.all_events"><code class="docutils literal notranslate"><span class="pre">lhe_reader.all_events</span></code></a></li>
-<li><a class="reference internal" href="#lhefile_methods.lhe_reader.cut_down_to_size"><code class="docutils literal notranslate"><span class="pre">lhe_reader.cut_down_to_size()</span></code></a></li>
-<li><a class="reference internal" href="#lhefile_methods.lhe_reader.non_event_portions"><code class="docutils literal notranslate"><span class="pre">lhe_reader.non_event_portions</span></code></a></li>
-<li><a class="reference internal" href="#lhefile_methods.lhe_reader.num_events"><code class="docutils literal notranslate"><span class="pre">lhe_reader.num_events</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">lhefile_methods module</a></li>
 </ul>
 </div>
     <a href="index.html">Home Page</a>
@@ -83,85 +74,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-lhefile_methods">
-<span id="lhefile-methods-module"></span><h1>lhefile_methods module<a class="headerlink" href="#module-lhefile_methods" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="lhefile_methods.lhe_reader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhefile_methods.</span></span><span class="sig-name descname"><span class="pre">lhe_reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lhefile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile_methods.html#lhe_reader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile_methods.lhe_reader" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>A class to read LHE files and perform cursory operations like
-cutting down to size and checking equality</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>lhefile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – the .lhe file you are using</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.11)"><strong>FileNotFoundError</strong></a> – Filename should have the .lhe extension</p>
-</dd>
-</dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="lhefile_methods.lhe_reader.all_events">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_events</span></span><a class="headerlink" href="#lhefile_methods.lhe_reader.all_events" title="Permalink to this definition"></a></dt>
-<dd><p>This function opens and collects every LHE event and puts them in a list to return
-stores the attribute as a cached property
-:returns: A list of every event sequence as strings from the file (AKA everything between &lt;event&gt; and &lt;/event&gt;)
-:rtype: list[str]</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lhefile_methods.lhe_reader.cut_down_to_size">
-<span class="sig-name descname"><span class="pre">cut_down_to_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhefile_methods.html#lhe_reader.cut_down_to_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhefile_methods.lhe_reader.cut_down_to_size" title="Permalink to this definition"></a></dt>
-<dd><p>Cuts the number of events in an LHE file down to n events while preserving other aspects of the file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The number of events you want to keep</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether you want the function to be verbose, by default False</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A string that should be passed to a file of the LHE file</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – n must be &lt;= the number of events in the file</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="lhefile_methods.lhe_reader.non_event_portions">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">non_event_portions</span></span><a class="headerlink" href="#lhefile_methods.lhe_reader.non_event_portions" title="Permalink to this definition"></a></dt>
-<dd><p>This function gets everything in an LHE file that is not an event
-(everything before the first &lt;event&gt; and everything after the last &lt;/event&gt;)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Two strings of everything before the first &lt;event&gt; and everything after the last &lt;/event&gt;</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Tuple[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="lhefile_methods.lhe_reader.num_events">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_events</span></span><a class="headerlink" href="#lhefile_methods.lhe_reader.num_events" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the number of events in the file as a cached property</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The number of events in the LHE file</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="lhefile-methods-module">
+<h1>lhefile_methods module<a class="headerlink" href="#lhefile-methods-module" title="Permalink to this heading"></a></h1>
 </section>
 
 

@@ -1,4 +1,3 @@
-import re
 import numpy as np
 
 lhe_2_root_options = [ #these are all the possible options for lhe2root

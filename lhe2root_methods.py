@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import mplhep as hep
 import lhe_constants
-import lhefile_methods
+import lhe_reader
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
@@ -32,39 +32,7 @@ def scale(counts, scaleto):
     signs = np.sign(counts) #makes sure to preserve sign
     counts = np.abs(counts)
     
-    return signs*counts*scaleto/np.sum(counts)
-
-
-def get_cross_section_from_LHE_file(LHE_file_path):
-    """Gets the cross section and its uncertainty from a given LHE file using regular expressions
-
-    Parameters
-    ----------
-    LHE_file_path : str
-        The file path for the LHE file
-
-    Returns
-    -------
-    Tuple[str, str]
-        A tuple of strings containing the cross section and its uncertainty
-    """
-    
-    cross_section = uncertainty = ""
-    
-    with open(LHE_file_path) as getting_cross_section:
-        head = getting_cross_section.read()
-        if head == "":
-            raise ValueError(LHE_file_path + " is empty!")
-        
-        #This regex was made by the very very helpful https://pythex.org/ (shoutout professor Upsorn Praphamontripong)
-        cross_finder = re.compile(r'<init>\n.+\n.+(\d+\.\d+E(\+|-)\d{2})\s+(\d+\.\d+E(\+|-)\d{2})\s+(\d+\.\d+E(\+|-)\d{2})(\d|\s)+</init>')
-        cross_section_match = re.search(cross_finder,head)
-        
-        cross_section = cross_section_match.group(1)
-        
-        uncertainty = cross_section_match.group(3)
-        
-    return cross_section, uncertainty #returns the cross section and its uncertainty        
+    return signs*counts*scaleto/np.sum(counts)  
 
 def check_for_MELA():
     """A function that checks whether or not you have the environment variables for MELA set up within your terminal
@@ -86,7 +54,8 @@ def check_for_MELA():
     return True
 
 
-def recursively_convert(current_directory, output_directory, argument, clean=False, verbose=False, exceptions=set(), write=""):
+def recursively_convert(current_directory, output_directory, argument, clean=False, verbose=False, exceptions=set(), 
+                        outfile_prefix='LHE', write=""):
     """This function will recurse through every directory and subdirectory in the place you call it, 
     and attempt to convert those files to ROOT files using lhe2root
 
@@ -107,6 +76,8 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
         NOTE: This is the case for any string in the path! folders of path <exception>/<other folder> will be ignored
         The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!
         Name your folders carefully!
+    outfile_prefix : str, optional
+        The prefix to attach to the generated ROOT files
     write : str, optional
         If a string, this will be the file that you will write the cross sections to. The file will be comma-separated, by default ""
 
@@ -138,8 +109,8 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
         # print(candidate)
         
         is_exempt = False
-        for exemption in exceptions:
-            if exemption in candidate:
+        for exemption in exceptions: #check all the exempted folders
+            if exemption in candidate: #if the keyword is ANYWHERE in the file path, ignore it!
                 is_exempt = True
         
         
@@ -155,23 +126,23 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
             continue
         
         else:
-            output_filename = 'LHE_' + candidate_filename + '.root'
+            output_filename = outfile_prefix + '_' + candidate_filename + '.root' #normally LHE_<lhe filename>
             
             running_str = "python3 lhe2root.py --" + argument + " " + output_directory + output_filename + ' '
-            running_str += candidate
+            running_str += candidate #lhe2root takes in an argument, the outname, and the input file
             
             if not verbose:
                 running_str += ' > /dev/null 2>&1'
             
-            cross_section, uncertainty = get_cross_section_from_LHE_file(candidate) #these are currently strings!
+            lhe_read = lhe_reader.lhe_reader(candidate)
+            
+            cross_section, uncertainty = lhe_read.cross_section() #these are currently strings!
             
             cross_sections[current_directory + '/' + output_filename] = (cross_section, uncertainty)
             
             titlestr = "Generating ROOT file for ./" + os.path.relpath(candidate)
             
-            lhe_reader = lhefile_methods.lhe_reader(candidate)
-            
-            number_events = len(lhe_reader.all_events)
+            number_events = len(lhe_read.all_events)
             
             lhe_constants.print_msg_box("Input name: " + candidate.split('/')[-1] + #This is the big message box seen per LHE file found
                 "\nOutput: " + str(os.path.relpath(output_directory + output_filename)) + 
