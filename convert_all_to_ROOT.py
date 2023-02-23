@@ -2,6 +2,7 @@ import os
 import argparse
 import lhe_constants
 import lhe2root_methods
+import matplotlib.pyplot as plt
 
 exceptions = { #There is no reason to store LHE files in the pycache folder. Use this to hardcode other exceptions in
     '__pycache__',
@@ -33,6 +34,8 @@ if __name__ == '__main__':
     parser.add_argument('-w', '--write', default="CrossSections.csv",
                         help='Option to write out cross sections to the file named here. Enter "" if you do not want a file written.')
 
+    parser.add_argument('-p', '--plot', action="store_true")
+
     args = parser.parse_args()
     
     
@@ -45,3 +48,21 @@ if __name__ == '__main__':
     file_cross_sections = lhe2root_methods.recursively_convert(current_directory=current_directory, output_directory=args.output, 
                                                                 argument=args.argument, verbose=args.verbose, 
                                                                 exceptions=exceptions, write=args.write)
+    
+    if args.plot:
+        names = []
+        cross_sections = []
+        uncertainties = []
+        
+        for name, (cross_section, uncertainty) in file_cross_sections.items():
+            names.append(name)
+            cross_sections.append(cross_section)
+            uncertainties.append(uncertainty)
+        
+        ypos = range(len(names))
+        plt.barh(ypos, cross_sections, xerr=uncertainties, align='center', ecolor='black', capsize=10)
+        plt.gca().set_yticks(ypos, labels=names)
+        plt.xlabel("\u03C3")
+        plt.tight_layout()
+        plt.savefig("CrossSections.png")
+        plt.close()

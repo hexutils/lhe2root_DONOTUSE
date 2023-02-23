@@ -2,7 +2,6 @@ import re
 import os
 import functools
 import numpy as np
-#https://docs.python.org/dev/library/functools.html#functools.cached_property
 
 class lhe_reader(object):
     def __init__(self, lhefile) -> None:
@@ -24,13 +23,14 @@ class lhe_reader(object):
         
         self.lhefile = os.path.abspath(lhefile)
         self.event_selection_regex = re.compile(r'(?s)(<event>(.*?)</event>)') #regular expression to find every event
+        
         with open(self.lhefile) as f:
             self.text = f.read()
         
     @functools.cached_property 
     def cross_section(self):
         """Gets the cross section and its uncertainty using regular expressions
-
+        https://docs.python.org/dev/library/functools.html#functools.cached_property
         Returns
         -------
         Tuple[str, str]
@@ -56,7 +56,7 @@ class lhe_reader(object):
     def all_events(self):
         """This function opens and collects every LHE event and puts them in a list to return
         stores the attribute as a cached property
-        
+        https://docs.python.org/dev/library/functools.html#functools.cached_property
         Returns
         -------
         list[str]
@@ -69,7 +69,7 @@ class lhe_reader(object):
     @functools.cached_property
     def num_events(self):
         """Returns the number of events in the file as a cached property
-
+        https://docs.python.org/dev/library/functools.html#functools.cached_property
         Returns
         -------
         int
@@ -81,7 +81,7 @@ class lhe_reader(object):
     def non_event_portions(self):
         """This function gets everything in an LHE file that is not an event 
         (everything before the first <event> and everything after the last </event>)
-
+        https://docs.python.org/dev/library/functools.html#functools.cached_property
         Returns
         -------
         Tuple[str, str]
@@ -143,6 +143,8 @@ class lhe_reader(object):
 
         Raises
         ------
+        TypeError
+            n should have the ability to become an integer
         ValueError
             n must be <= the number of events in the file
         ValueError
@@ -150,9 +152,12 @@ class lhe_reader(object):
         """
         start_of_file, end_of_file = self.non_event_portions
         
-        orig_num = len(self.all_events)
+        orig_num = len(self.all_events) #this is a sneaky way to also enforce that all the events are precomputed here
         
-        n = int(n)
+        try:
+            n = int(n)
+        except:
+            raise TypeError("n should be integer-like!")
         
         if n == orig_num:
             return start_of_file + ("\n".join(self.all_events)) + end_of_file
@@ -160,9 +165,10 @@ class lhe_reader(object):
             raise ValueError("n must be less than or equal to the number of events already in the file!")
         elif n == 0:
             raise ValueError("Selecting 0 events makes literally no sense")
-        if verbose:
-            print(orig_num, "events ->", n, "events")
         
+        if verbose:
+            print("{:.3e}".format(orig_num), "events ->", "{:.3e}".format(n), "events")
+            print("Shuffling is turned", "on" if shuffled else "off")
         cut_down = np.random.choice(self.all_events, n) if shuffled else self.all_events[:n]
 
         

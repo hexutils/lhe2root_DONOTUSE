@@ -13,16 +13,17 @@ plt.style.use(hep.style.ROOT)
 mpl.rcParams['axes.labelsize'] = 40
 mpl.rcParams['xaxis.labellocation'] = 'center'
 
-def scale(counts, scaleto):
+def scale(scaleto, counts, bins=[]):
     """This function scales histograms according to their absolute area under the curve (no negatives allowed!)
 
     Parameters
     ----------
-    counts : list[Union[int,float]]
-        A list of bin counts
     scaleto : float
         The absolute area to scale to
-
+    counts : list[Union[int,float]]
+        A list of bin counts
+    bins : list[float]
+        The bins you want to use; use this option if you are passing a numpy histogram in, by default []
     Returns
     -------
     list[float]
@@ -32,7 +33,10 @@ def scale(counts, scaleto):
     signs = np.sign(counts) #makes sure to preserve sign
     counts = np.abs(counts)
     
-    return signs*counts*scaleto/np.sum(counts)  
+    if any(bins):
+        return signs*counts*scaleto/np.sum(counts), bins
+    
+    return signs*counts*scaleto/np.sum(counts)
 
 def check_for_MELA():
     """A function that checks whether or not you have the environment variables for MELA set up within your terminal
@@ -114,9 +118,9 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
                 is_exempt = True
         
         
-        if (os.path.isdir(candidate)) and (not is_exempt): #convert all the LHE files in every directory below you
+        if (os.path.isdir(candidate)) and (not is_exempt): #convert all the LHE files in every directory below you that are not exempt
             one_folder_below = recursively_convert(candidate, output_directory, argument, clean, verbose, exceptions)
-            cross_sections.update(one_folder_below)
+            cross_sections.update(one_folder_below) #updates the dictionary
         
         if candidate.split('.')[-1] != 'lhe':
             if clean and candidate.split['.'][-1] == '.root':
@@ -128,6 +132,9 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
         else:
             output_filename = outfile_prefix + '_' + candidate_filename + '.root' #normally LHE_<lhe filename>
             
+            if os.path.isfile(output_filename):
+                continue
+            
             running_str = "python3 lhe2root.py --" + argument + " " + output_directory + output_filename + ' '
             running_str += candidate #lhe2root takes in an argument, the outname, and the input file
             
@@ -136,9 +143,9 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
             
             lhe_read = lhe_reader.lhe_reader(candidate)
             
-            cross_section, uncertainty = lhe_read.cross_section() #these are currently strings!
+            cross_section, uncertainty = lhe_read.cross_section #these are floats!
             
-            cross_sections[current_directory + '/' + output_filename] = (cross_section, uncertainty)
+            cross_sections[current_directory + output_filename] = (cross_section, uncertainty)
             
             titlestr = "Generating ROOT file for ./" + os.path.relpath(candidate)
             
@@ -147,8 +154,8 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
             lhe_constants.print_msg_box("Input name: " + candidate.split('/')[-1] + #This is the big message box seen per LHE file found
                 "\nOutput: " + str(os.path.relpath(output_directory + output_filename)) + 
                 "\nArgument: " + argument + 
-                "\n\u03C3: " + cross_section + " \u00b1 " + uncertainty + 
-                "\nN: " + "{:e}".format(number_events) + " events",
+                "\n\u03C3: " + "{:.4e}".format(cross_section) + " \u00b1 " + "{:.2e}".format(uncertainty) + 
+                "\nN: " + "{:.4e}".format(number_events) + " events",
                 title=titlestr, width=len(titlestr))
             
             os.system(running_str)
@@ -157,7 +164,7 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
         with open(output_directory + write, "w+") as f:
             f.write("Filename, Cross Section, Uncertainty\n")
             for fname, (crosssection, uncertainty) in cross_sections.items():
-                f.write(fname + ', ' + crosssection + ', ' + uncertainty + '\n')
+                f.write(fname + ', ' + "{:e}".format(crosssection) + ', ' + "{:e}".format(uncertainty) + '\n')
                 
     return cross_sections
 
