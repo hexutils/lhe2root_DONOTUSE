@@ -42,6 +42,20 @@ class Event(object):
 
 class LHEEvent(object, metaclass=abc.ABCMeta):
   def __init__(self, event, isgen):
+    """A class for a single LHE event in a file
+
+    Parameters
+    ----------
+    event : str
+        The string consisting of a single event between <event> and </event>
+    isgen : bool
+        Whether it was a generation quantity
+
+    Raises
+    ------
+    ValueError
+        Raises when the number of particles is wrong in the event
+    """
     lines = event.split("\n")
 
     self.weights = {}

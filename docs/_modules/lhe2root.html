@@ -115,6 +115,20 @@
 
 <div class="viewcode-block" id="LHEEvent"><a class="viewcode-back" href="../lhe2root.html#lhe2root.LHEEvent">[docs]</a><span class="k">class</span> <span class="nc">LHEEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">isgen</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class for a single LHE event in a file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    event : str</span>
+<span class="sd">        The string consisting of a single event between &lt;event&gt; and &lt;/event&gt;</span>
+<span class="sd">    isgen : bool</span>
+<span class="sd">        Whether it was a generation quantity</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raises when the number of particles is wrong in the event</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="p">{}</span>

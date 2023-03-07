@@ -2,11 +2,13 @@ import re
 import os
 import functools
 import numpy as np
+import useful_funcs_and_constants
+import warnings
 
 class lhe_reader(object):
     def __init__(self, lhefile) -> None:
         """A class to read LHE files and perform cursory operations like 
-        cutting down to size and checking equality
+        cutting down to size, checking equality, and ROOT conversion
 
         Parameters
         ----------
@@ -19,7 +21,7 @@ class lhe_reader(object):
             Filename should have the .lhe extension
         """
         if lhefile.split('.')[-1] != 'lhe':
-            raise FileNotFoundError("LHE File Extension Required!")
+            raise FileNotFoundError("LHE File Extension Required for file " + lhefile + "!")
         
         self.lhefile = os.path.abspath(lhefile)
         self.event_selection_regex = re.compile(r'(?s)(<event>(.*?)</event>)') #regular expression to find every event
@@ -42,7 +44,7 @@ class lhe_reader(object):
         # with open(self.lhefile) as getting_cross_section:
         head = self.non_event_portions[0] #The part before the events contains the cross section
         
-        #This regex was made by the very very helpful https://pythex.org/ (shoutout professor Upsorn Praphamontripong)
+        #This regex was made by the very very helpful https://pythex.org/ (shoutout UVA professor Upsorn Praphamontripong)
         cross_finder = re.compile(r'<init>\n.+\n.+(\d+\.\d+E(\+|-)\d{2})\s+(\d+\.\d+E(\+|-)\d{2})\s+(\d+\.\d+E(\+|-)\d{2})(\d|\s)+</init>')
         cross_section_match = re.search(cross_finder,head)
         
@@ -55,12 +57,13 @@ class lhe_reader(object):
     @functools.cached_property 
     def all_events(self):
         """This function opens and collects every LHE event and puts them in a list to return
-        stores the attribute as a cached property
+        Attribute is stored as a cached property
         https://docs.python.org/dev/library/functools.html#functools.cached_property
+        
         Returns
         -------
         list[str]
-            A list of every event sequence as strings from the file (AKA everything between <event> and </event>)
+            A list of every event sequence as strings from the file (everything between every <event> and </event>)
         """
         all_matches = re.findall(self.event_selection_regex, self.text)
         all_matches = [item[0] for item in all_matches]
@@ -70,6 +73,7 @@ class lhe_reader(object):
     def num_events(self):
         """Returns the number of events in the file as a cached property
         https://docs.python.org/dev/library/functools.html#functools.cached_property
+        
         Returns
         -------
         int
@@ -82,6 +86,7 @@ class lhe_reader(object):
         """This function gets everything in an LHE file that is not an event 
         (everything before the first <event> and everything after the last </event>)
         https://docs.python.org/dev/library/functools.html#functools.cached_property
+        
         Returns
         -------
         Tuple[str, str]
@@ -121,11 +126,12 @@ class lhe_reader(object):
         to_str = ""
         to_str += "LHE file " + self.lhefile
         to_str += "\n\tN: " + str(self.num_events)
-        to_str += "\n\t\u03C3: " + "{:e}".format(self.cross_section[0]) + "\n"
+        to_str += "\n\t\u03C3: " + "{:e}".format(self.cross_section[0]) + "\n" #\u03C3 is the unicode for sigma
         return to_str
 
     def cut_down_to_size(self, n, verbose=False, shuffled=False):
         """Cuts the number of events in an LHE file down to n events while preserving other aspects of the file
+        Outputs a string that should be placed in a file of your choice
 
         Parameters
         ----------
@@ -146,8 +152,6 @@ class lhe_reader(object):
         TypeError
             n should have the ability to become an integer
         ValueError
-            n must be <= the number of events in the file
-        ValueError
             n must be > 0
         """
         start_of_file, end_of_file = self.non_event_portions
@@ -162,14 +166,88 @@ class lhe_reader(object):
         if n == orig_num:
             return start_of_file + ("\n".join(self.all_events)) + end_of_file
         elif n > orig_num:
-            raise ValueError("n must be less than or equal to the number of events already in the file!")
-        elif n == 0:
-            raise ValueError("Selecting 0 events makes literally no sense")
+            warnings.warn("The number of events selected is > the number of events in the file")
+            return start_of_file + ("\n".join(self.all_events)) + end_of_file #just return the whole file
+        elif n <= 0:
+            raise ValueError("Selecting <= 0 events makes literally no sense")
         
         if verbose:
             print("{:.3e}".format(orig_num), "events ->", "{:.3e}".format(n), "events")
             print("Shuffling is turned", "on" if shuffled else "off")
+            
         cut_down = np.random.choice(self.all_events, n) if shuffled else self.all_events[:n]
-
         
-        return start_of_file + ("\n".join(cut_down)) + end_of_file #this would ideally be placed directly into a file
+        return start_of_file + ("\n".join(cut_down)) + end_of_file #this would be placed directly into a file
+    
+    
+    def to_ROOT(self, argument, output_directory='./', output_prefix='LHE', verbose=False, replace=False):
+        """Converts a single LHE file to ROOT using the lhe2root tool
+        This works best for Higgs->4l, as that is what lhe2root is made for
+
+        Parameters
+        ----------
+        argument : str
+            This should be one of the viable lhe2root options
+        output_directory : str, optional
+            The directory to output the ROOT file to, by default './'
+        output_prefix : str, optional
+            The prefix attached to the ROOT file, by default 'LHE_'
+        verbose : bool, optional
+            If false, all output is suppressed, by default False
+        replace : bool, optional
+            If true, when an identical ROOT file is found it will overwrite the file, by default False
+
+        Raises
+        ------
+        FileNotFoundError
+            MELA pathways should be configured to use LHE2ROOT
+        ValueError
+            One of the specified lhe2root configurations should be used
+        FileNotFoundError
+            The output directory should be a valid directory
+        """
+        if not useful_funcs_and_constants.check_for_MELA():
+            raise FileNotFoundError("MELA Path not found!")
+        
+        if argument not in useful_funcs_and_constants.lhe_2_root_options:
+            raise ValueError("Invalid LHE2ROOT option!")
+        
+        if not os.path.isdir(output_directory):
+            raise FileNotFoundError("Output Directory is invalid!")
+        
+        output_directory = os.path.abspath(output_directory)
+        
+        if output_directory[-1] != '/':
+            output_directory += '/'
+        
+        input_filename = self.lhefile.split('/')[-1]
+        output_filename = output_prefix + '_' + input_filename[:input_filename.rfind('.')] + '.root'
+        
+        outfile = output_directory + output_filename
+        if os.path.isfile(outfile):
+            print(outfile, "already exists!")
+            if replace:
+                print("replacing", outfile)
+                useful_funcs_and_constants.safely_run_process("rm " + output_directory + output_filename)
+            else:
+                return outfile
+        
+        titlestr = "Generating ROOT file for " + os.path.relpath(self.lhefile)
+        
+        useful_funcs_and_constants.print_msg_box("Input name: " + self.lhefile.split('/')[-1] + #This is the big message box seen per LHE file found
+            "\nOutput: " + str(os.path.relpath(outfile)) + 
+            "\nArgument: " + argument + 
+            "\n\u03C3: " + "{:.4e}".format(self.cross_section[0]) + " \u00b1 " + "{:.2e}".format(self.cross_section[1]) + 
+            "\nN: " + "{:.4e}".format(self.num_events) + " events",
+            title=titlestr, width=len(titlestr))
+        
+        running_str = "python3 lhe2root.py --" + argument + " " + output_directory + output_filename + ' '
+        running_str += self.lhefile #lhe2root takes in an argument, the outname, and the input file
+        
+        if not verbose:
+            running_str += ' > /dev/null 2>&1'
+        
+        
+        useful_funcs_and_constants.safely_run_process(running_str)
+        
+        return outfile

@@ -4,10 +4,11 @@ import uproot
 import pandas as pd
 import numpy as np
 import mplhep as hep
-import lhe_constants
+import useful_funcs_and_constants
 import lhe_reader
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import warnings
 
 plt.style.use(hep.style.ROOT)
 mpl.rcParams['axes.labelsize'] = 40
@@ -38,28 +39,9 @@ def scale(scaleto, counts, bins=[]):
     
     return signs*counts*scaleto/np.sum(counts)
 
-def check_for_MELA():
-    """A function that checks whether or not you have the environment variables for MELA set up within your terminal
-
-    Returns
-    -------
-    bool
-        A boolean as to whether or not MELA is properly set up
-    """
-    if "LD_LIBRARY_PATH" not in os.environ: #this library path is set up by the MELA setup script
-        print("MELA environment variables have not been set up correctly")
-        if 'HexUtils' in os.getcwd():
-            print("Run './install.sh' in the directory above HexUtils to set these up!")
-        else:
-            print("Run './setup.sh' in the MELA directory to set these up!")
-            
-        return False
-    
-    return True
-
 
 def recursively_convert(current_directory, output_directory, argument, clean=False, verbose=False, exceptions=set(), 
-                        outfile_prefix='LHE', write=""):
+                        outfile_prefix='LHE', cut_down_to=-1, write=""):
     """This function will recurse through every directory and subdirectory in the place you call it, 
     and attempt to convert those files to ROOT files using lhe2root
 
@@ -81,7 +63,9 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
         The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!
         Name your folders carefully!
     outfile_prefix : str, optional
-        The prefix to attach to the generated ROOT files
+        The prefix to attach to the generated ROOT files, by default "LHE"
+    cut_down_to : int, optional
+        The number of events you want in the LHE file before converting. Negative numbers mean all events will be kept, by default -1
     write : str, optional
         If a string, this will be the file that you will write the cross sections to. The file will be comma-separated, by default ""
 
@@ -106,9 +90,7 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
     for candidate in os.listdir(current_directory):
         # print(candidate)
         candidate = os.fsdecode(candidate)
-        
-        candidate_filename = candidate[:candidate.rfind('.')]
-                
+                        
         candidate = current_directory + '/' + candidate
         # print(candidate)
         
@@ -123,44 +105,29 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
             cross_sections.update(one_folder_below) #updates the dictionary
         
         if candidate.split('.')[-1] != 'lhe':
-            if clean and candidate.split['.'][-1] == '.root':
-                lhe_constants.print_msg_box("Removing " + candidate, title="Cleaning directory " + current_directory)
-                os.remove(candidate)
+        #     if clean and candidate.split['.'][-1] == '.root':
+        #         useful_funcs_and_constants.print_msg_box("Removing " + candidate, title="Cleaning directory " + current_directory)
+        #         os.remove(candidate)
                 
             continue
         
-        else:
-            output_filename = outfile_prefix + '_' + candidate_filename + '.root' #normally LHE_<lhe filename>
-            
-            if os.path.isfile(output_filename):
-                continue
-            
-            running_str = "python3 lhe2root.py --" + argument + " " + output_directory + output_filename + ' '
-            running_str += candidate #lhe2root takes in an argument, the outname, and the input file
-            
-            if not verbose:
-                running_str += ' > /dev/null 2>&1'
-            
-            lhe_read = lhe_reader.lhe_reader(candidate)
-            
-            cross_section, uncertainty = lhe_read.cross_section #these are floats!
-            
-            cross_sections[current_directory + output_filename] = (cross_section, uncertainty)
-            
-            titlestr = "Generating ROOT file for ./" + os.path.relpath(candidate)
-            
-            number_events = len(lhe_read.all_events)
-            
-            lhe_constants.print_msg_box("Input name: " + candidate.split('/')[-1] + #This is the big message box seen per LHE file found
-                "\nOutput: " + str(os.path.relpath(output_directory + output_filename)) + 
-                "\nArgument: " + argument + 
-                "\n\u03C3: " + "{:.4e}".format(cross_section) + " \u00b1 " + "{:.2e}".format(uncertainty) + 
-                "\nN: " + "{:.4e}".format(number_events) + " events",
-                title=titlestr, width=len(titlestr))
-            
-            os.system(running_str)
+        else:            
+            reader = lhe_reader.lhe_reader(candidate)
+            if cut_down_to > 0:
+                candidate = candidate.split('.')[0] + "_cut_down_to" + str(cut_down_to) + '.lhe'
+                if verbose:
+                    print("Cutting down file to", cut_down_to, "events in file", candidate)
+                
+                with open(candidate, 'w+') as f:
+                    f.write(reader.cut_down_to_size(cut_down_to))
+                
+                reader = lhe_reader.lhe_reader(candidate)#reset the reader and the candidate to the new cut down file
+                
+            outfile = reader.to_ROOT(argument, output_directory, outfile_prefix, verbose, clean)
+            cross_sections[outfile] = reader.cross_section
     
     if write:
+        print("Dumping Cross Sections to", output_directory + write)
         with open(output_directory + write, "w+") as f:
             f.write("Filename, Cross Section, Uncertainty\n")
             for fname, (crosssection, uncertainty) in cross_sections.items():
@@ -237,8 +204,8 @@ def plot_one_quantity(filenames, attribute, xrange, nbins=100, labels=[], norm=F
                 
             plt.xlim(xrange)
             
-            if attribute in lhe_constants.beautified_title:
-                plt.xlabel(lhe_constants.beautified_title[attribute] + title, horizontalalignment='center', fontsize=30)
+            if attribute in useful_funcs_and_constants.beautified_title:
+                plt.xlabel(useful_funcs_and_constants.beautified_title[attribute] + title, horizontalalignment='center', fontsize=30)
             else:
                 plt.xlabel(attribute + title, horizontalalignment='center', fontsize=30)
                 
@@ -301,9 +268,9 @@ def plot_interference(mixed_file, pure1, pure2, pure1Name, pure2Name, attribute,
         BW2_sample = rawBW2[rawBW2.keys()[0]].arrays(library='pd')
         
     
-    interf_hist, bins = np.histogram(interf_sample[attribute], range=lhe_constants.ranges[attribute], bins=nbins)
-    BW1_hist, _ = np.histogram(BW1_sample[attribute], range=lhe_constants.ranges[attribute], bins=bins)
-    BW2_hist, _ = np.histogram(BW2_sample[attribute], range=lhe_constants.ranges[attribute], bins=bins)
+    interf_hist, bins = np.histogram(interf_sample[attribute], range=useful_funcs_and_constants.ranges[attribute], bins=nbins)
+    BW1_hist, _ = np.histogram(BW1_sample[attribute], range=useful_funcs_and_constants.ranges[attribute], bins=bins)
+    BW2_hist, _ = np.histogram(BW2_sample[attribute], range=useful_funcs_and_constants.ranges[attribute], bins=bins)
     
     # print('%E' % CrossSections[pure1][0], '%E' % CrossSections[pure2][0], '%E' % np.sqrt(CrossSections[pure1][0]*CrossSections[pure2][0])
     #     , '%E' % CrossSections[mixed_file][0])
@@ -324,8 +291,8 @@ def plot_interference(mixed_file, pure1, pure2, pure1Name, pure2Name, attribute,
     
     hep.histplot(interf_actual, bins, label=pure1Name + '/' + pure2Name + ' Interference', lw=2)
     
-    plt.xlabel(lhe_constants.beautified_title[attribute] + " " + title, horizontalalignment='center', fontsize=20)
-    plt.xlim(lhe_constants.ranges[attribute])
+    plt.xlabel(useful_funcs_and_constants.beautified_title[attribute] + " " + title, horizontalalignment='center', fontsize=20)
+    plt.xlim(useful_funcs_and_constants.ranges[attribute])
     plt.legend()
     plt.tight_layout()
     

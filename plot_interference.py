@@ -2,7 +2,7 @@ import argparse
 import lhe2root_methods
 import mplhep as hep
 import matplotlib.pyplot as plt
-import lhe_constants
+import lhe2root.useful_funcs_and_constants as useful_funcs_and_constants
 
 
 def ran(s):
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     parser.add_argument('-csf', '--crossSectionFile', default="CrossSections.csv",
                         help="The name of the file containing the cross sections for your data")
 
-    parser.add_argument('-v','--value',default='M4L', choices=list(lhe_constants.beautified_title.keys()),
+    parser.add_argument('-v','--value',default='M4L', choices=list(useful_funcs_and_constants.beautified_title.keys()),
                         help="The attributes you want to plot.")
 
     parser.add_argument('-r','--range', default=(6,9), type=ran,

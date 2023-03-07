@@ -77,25 +77,27 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">mplhep</span> <span class="k">as</span> <span class="nn">hep</span>
-<span class="kn">import</span> <span class="nn">lhe_constants</span>
+<span class="kn">import</span> <span class="nn">useful_funcs_and_constants</span>
 <span class="kn">import</span> <span class="nn">lhe_reader</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">hep</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">ROOT</span><span class="p">)</span>
 <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">40</span>
 <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;xaxis.labellocation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;center&#39;</span>
 
-<div class="viewcode-block" id="scale"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.scale">[docs]</a><span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">scaleto</span><span class="p">):</span>
+<div class="viewcode-block" id="scale"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.scale">[docs]</a><span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">scaleto</span><span class="p">,</span> <span class="n">counts</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This function scales histograms according to their absolute area under the curve (no negatives allowed!)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    counts : list[Union[int,float]]</span>
-<span class="sd">        A list of bin counts</span>
 <span class="sd">    scaleto : float</span>
 <span class="sd">        The absolute area to scale to</span>
-
+<span class="sd">    counts : list[Union[int,float]]</span>
+<span class="sd">        A list of bin counts</span>
+<span class="sd">    bins : list[float]</span>
+<span class="sd">        The bins you want to use; use this option if you are passing a numpy histogram in, by default []</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    list[float]</span>
@@ -105,30 +107,14 @@
     <span class="n">signs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span> <span class="c1">#makes sure to preserve sign</span>
     <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>
     
-    <span class="k">return</span> <span class="n">signs</span><span class="o">*</span><span class="n">counts</span><span class="o">*</span><span class="n">scaleto</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>  </div>
-
-<div class="viewcode-block" id="check_for_MELA"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.check_for_MELA">[docs]</a><span class="k">def</span> <span class="nf">check_for_MELA</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A function that checks whether or not you have the environment variables for MELA set up within your terminal</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bool</span>
-<span class="sd">        A boolean as to whether or not MELA is properly set up</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;LD_LIBRARY_PATH&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span> <span class="c1">#this library path is set up by the MELA setup script</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MELA environment variables have not been set up correctly&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;HexUtils&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Run &#39;./install.sh&#39; in the directory above HexUtils to set these up!&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Run &#39;./setup.sh&#39; in the MELA directory to set these up!&quot;</span><span class="p">)</span>
-            
-        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">signs</span><span class="o">*</span><span class="n">counts</span><span class="o">*</span><span class="n">scaleto</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">),</span> <span class="n">bins</span>
     
-    <span class="k">return</span> <span class="kc">True</span></div>
+    <span class="k">return</span> <span class="n">signs</span><span class="o">*</span><span class="n">counts</span><span class="o">*</span><span class="n">scaleto</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="recursively_convert"><a class="viewcode-back" href="../lhe2root_methods.html#lhe2root_methods.recursively_convert">[docs]</a><span class="k">def</span> <span class="nf">recursively_convert</span><span class="p">(</span><span class="n">current_directory</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> 
-                        <span class="n">outfile_prefix</span><span class="o">=</span><span class="s1">&#39;LHE&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+                        <span class="n">outfile_prefix</span><span class="o">=</span><span class="s1">&#39;LHE&#39;</span><span class="p">,</span> <span class="n">cut_down_to</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This function will recurse through every directory and subdirectory in the place you call it, </span>
 <span class="sd">    and attempt to convert those files to ROOT files using lhe2root</span>
 
@@ -150,7 +136,9 @@
 <span class="sd">        The same goes for folders where a substring of the folder matches the name in the exception - useful for catching multiple folders!</span>
 <span class="sd">        Name your folders carefully!</span>
 <span class="sd">    outfile_prefix : str, optional</span>
-<span class="sd">        The prefix to attach to the generated ROOT files</span>
+<span class="sd">        The prefix to attach to the generated ROOT files, by default &quot;LHE&quot;</span>
+<span class="sd">    cut_down_to : int, optional</span>
+<span class="sd">        The number of events you want in the LHE file before converting. Negative numbers mean all events will be kept, by default -1</span>
 <span class="sd">    write : str, optional</span>
 <span class="sd">        If a string, this will be the file that you will write the cross sections to. The file will be comma-separated, by default &quot;&quot;</span>
 
@@ -175,9 +163,7 @@
     <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">current_directory</span><span class="p">):</span>
         <span class="c1"># print(candidate)</span>
         <span class="n">candidate</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fsdecode</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
-        
-        <span class="n">candidate_filename</span> <span class="o">=</span> <span class="n">candidate</span><span class="p">[:</span><span class="n">candidate</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)]</span>
-                
+                        
         <span class="n">candidate</span> <span class="o">=</span> <span class="n">current_directory</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">candidate</span>
         <span class="c1"># print(candidate)</span>
         
@@ -187,50 +173,38 @@
                 <span class="n">is_exempt</span> <span class="o">=</span> <span class="kc">True</span>
         
         
-        <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">candidate</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_exempt</span><span class="p">):</span> <span class="c1">#convert all the LHE files in every directory below you</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">candidate</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_exempt</span><span class="p">):</span> <span class="c1">#convert all the LHE files in every directory below you that are not exempt</span>
             <span class="n">one_folder_below</span> <span class="o">=</span> <span class="n">recursively_convert</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">clean</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span>
-            <span class="n">cross_sections</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">one_folder_below</span><span class="p">)</span>
+            <span class="n">cross_sections</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">one_folder_below</span><span class="p">)</span> <span class="c1">#updates the dictionary</span>
         
         <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;lhe&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">clean</span> <span class="ow">and</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">[</span><span class="s1">&#39;.&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.root&#39;</span><span class="p">:</span>
-                <span class="n">lhe_constants</span><span class="o">.</span><span class="n">print_msg_box</span><span class="p">(</span><span class="s2">&quot;Removing &quot;</span> <span class="o">+</span> <span class="n">candidate</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Cleaning directory &quot;</span> <span class="o">+</span> <span class="n">current_directory</span><span class="p">)</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+        <span class="c1">#     if clean and candidate.split[&#39;.&#39;][-1] == &#39;.root&#39;:</span>
+        <span class="c1">#         useful_funcs_and_constants.print_msg_box(&quot;Removing &quot; + candidate, title=&quot;Cleaning directory &quot; + current_directory)</span>
+        <span class="c1">#         os.remove(candidate)</span>
                 
             <span class="k">continue</span>
         
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">output_filename</span> <span class="o">=</span> <span class="n">outfile_prefix</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">candidate_filename</span> <span class="o">+</span> <span class="s1">&#39;.root&#39;</span> <span class="c1">#normally LHE_&lt;lhe filename&gt;</span>
-            
-            <span class="n">running_str</span> <span class="o">=</span> <span class="s2">&quot;python3 lhe2root.py --&quot;</span> <span class="o">+</span> <span class="n">argument</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">output_directory</span> <span class="o">+</span> <span class="n">output_filename</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
-            <span class="n">running_str</span> <span class="o">+=</span> <span class="n">candidate</span> <span class="c1">#lhe2root takes in an argument, the outname, and the input file</span>
-            
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="n">running_str</span> <span class="o">+=</span> <span class="s1">&#39; &gt; /dev/null 2&gt;&amp;1&#39;</span>
-            
-            <span class="n">lhe_read</span> <span class="o">=</span> <span class="n">lhe_reader</span><span class="o">.</span><span class="n">lhe_reader</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
-            
-            <span class="n">cross_section</span><span class="p">,</span> <span class="n">uncertainty</span> <span class="o">=</span> <span class="n">lhe_read</span><span class="o">.</span><span class="n">cross_section</span><span class="p">()</span> <span class="c1">#these are currently strings!</span>
-            
-            <span class="n">cross_sections</span><span class="p">[</span><span class="n">current_directory</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">output_filename</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">cross_section</span><span class="p">,</span> <span class="n">uncertainty</span><span class="p">)</span>
-            
-            <span class="n">titlestr</span> <span class="o">=</span> <span class="s2">&quot;Generating ROOT file for ./&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
-            
-            <span class="n">number_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lhe_read</span><span class="o">.</span><span class="n">all_events</span><span class="p">)</span>
-            
-            <span class="n">lhe_constants</span><span class="o">.</span><span class="n">print_msg_box</span><span class="p">(</span><span class="s2">&quot;Input name: &quot;</span> <span class="o">+</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="c1">#This is the big message box seen per LHE file found</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Output: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">output_directory</span> <span class="o">+</span> <span class="n">output_filename</span><span class="p">))</span> <span class="o">+</span> 
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Argument: &quot;</span> <span class="o">+</span> <span class="n">argument</span> <span class="o">+</span> 
-                <span class="s2">&quot;</span><span class="se">\n\u03C3</span><span class="s2">: &quot;</span> <span class="o">+</span> <span class="n">cross_section</span> <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\u00b1</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="n">uncertainty</span> <span class="o">+</span> 
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">N: &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">number_events</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; events&quot;</span><span class="p">,</span>
-                <span class="n">title</span><span class="o">=</span><span class="n">titlestr</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">titlestr</span><span class="p">))</span>
-            
-            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">running_str</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>            
+            <span class="n">reader</span> <span class="o">=</span> <span class="n">lhe_reader</span><span class="o">.</span><span class="n">lhe_reader</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cut_down_to</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">candidate</span> <span class="o">=</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_cut_down_to&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">cut_down_to</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.lhe&#39;</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cutting down file to&quot;</span><span class="p">,</span> <span class="n">cut_down_to</span><span class="p">,</span> <span class="s2">&quot;events in file&quot;</span><span class="p">,</span> <span class="n">candidate</span><span class="p">)</span>
+                
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">cut_down_to_size</span><span class="p">(</span><span class="n">cut_down_to</span><span class="p">))</span>
+                
+                <span class="n">reader</span> <span class="o">=</span> <span class="n">lhe_reader</span><span class="o">.</span><span class="n">lhe_reader</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span><span class="c1">#reset the reader and the candidate to the new cut down file</span>
+                
+            <span class="n">outfile</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">to_ROOT</span><span class="p">(</span><span class="n">argument</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">outfile_prefix</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">clean</span><span class="p">)</span>
+            <span class="n">cross_sections</span><span class="p">[</span><span class="n">outfile</span><span class="p">]</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">cross_section</span>
     
     <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dumping Cross Sections to&quot;</span><span class="p">,</span> <span class="n">output_directory</span> <span class="o">+</span> <span class="n">write</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_directory</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Filename, Cross Section, Uncertainty</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="p">(</span><span class="n">crosssection</span><span class="p">,</span> <span class="n">uncertainty</span><span class="p">)</span> <span class="ow">in</span> <span class="n">cross_sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fname</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">crosssection</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">uncertainty</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fname</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">crosssection</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uncertainty</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
                 
     <span class="k">return</span> <span class="n">cross_sections</span></div>
 
@@ -303,8 +277,8 @@
                 
             <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xrange</span><span class="p">)</span>
             
-            <span class="k">if</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">lhe_constants</span><span class="o">.</span><span class="n">beautified_title</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">beautified_title</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">+</span> <span class="n">title</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">beautified_title</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">beautified_title</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">+</span> <span class="n">title</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">attribute</span> <span class="o">+</span> <span class="n">title</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
                 
@@ -367,9 +341,9 @@
         <span class="n">BW2_sample</span> <span class="o">=</span> <span class="n">rawBW2</span><span class="p">[</span><span class="n">rawBW2</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">arrays</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s1">&#39;pd&#39;</span><span class="p">)</span>
         
     
-    <span class="n">interf_hist</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">interf_sample</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">nbins</span><span class="p">)</span>
-    <span class="n">BW1_hist</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">BW1_sample</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
-    <span class="n">BW2_hist</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">BW2_sample</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    <span class="n">interf_hist</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">interf_sample</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">nbins</span><span class="p">)</span>
+    <span class="n">BW1_hist</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">BW1_sample</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    <span class="n">BW2_hist</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">BW2_sample</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
     
     <span class="c1"># print(&#39;%E&#39; % CrossSections[pure1][0], &#39;%E&#39; % CrossSections[pure2][0], &#39;%E&#39; % np.sqrt(CrossSections[pure1][0]*CrossSections[pure2][0])</span>
     <span class="c1">#     , &#39;%E&#39; % CrossSections[mixed_file][0])</span>
@@ -390,8 +364,8 @@
     
     <span class="n">hep</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">interf_actual</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">pure1Name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">pure2Name</span> <span class="o">+</span> <span class="s1">&#39; Interference&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">beautified_title</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">title</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">lhe_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">beautified_title</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">title</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
     
