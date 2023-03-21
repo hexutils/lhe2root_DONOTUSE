@@ -15,7 +15,7 @@ if __name__ == '__main__':
                         help="The argument to be passed to LHE2ROOT.py")
 
     parser.add_argument('-c',"--clean", action='store_true',
-                        help="remove all produced ROOT files and re-create them")
+                        help="remove all previously produced ROOT files and re-create them")
 
     parser.add_argument('-cd', '--currentDirectory', type=str, default=os.getcwd(),
                         help="The directory you would like to recurse down from")
@@ -38,14 +38,23 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     
+    if not os.path.isdir(args.currentDirectory):
+        raise argparse.ArgumentError("The directory of choice either does not exist, or is not a directory!")
+    
+    if not os.path.isdir(args.output):
+        raise argparse.ArgumentError("The chosen output directory either does not exist, or is not a directory!")
     
     current_directory = args.currentDirectory
     exceptions = set(args.exceptions).union(exceptions)
     
-    if not useful_funcs_and_constants.check_for_MELA():
+    env = dict(os.environ)
+    
+    if not useful_funcs_and_constants.check_for_MELA(env):
+        print("Current OS Environment:")
+        [print(i,":",j,"\n") for i,j in env.items()]
         raise FileNotFoundError("MELA path not found!")
     
     file_cross_sections = lhe2root_methods.recursively_convert(current_directory=current_directory, output_directory=args.output, 
                                                                 argument=args.argument, verbose=args.verbose, 
                                                                 exceptions=exceptions, write=args.write, clean=args.clean,
-                                                                cut_down_to=args.cutDown)
+                                                                cut_down_to=args.cutDown, env=env)

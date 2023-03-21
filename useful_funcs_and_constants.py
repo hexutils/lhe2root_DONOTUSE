@@ -73,38 +73,57 @@ def print_msg_box(msg, indent=1, width=0, title=""):
     box += f'╚{"═" * (width + indent * 2)}╝'  # lower_border
     print(box)
     
-def safely_run_process(running_str):
+def safely_run_process(running_str, env={}):
     """Safely runs a process in the terminal with proper exception handling
 
     Parameters
     ----------
     running_str : str
         This is the command you are passing to the terminal
+    env : dict
+            This contains the lhe2root environment variables by doing dict(os.environ) in a main method, by default {}
     """
     try:
-        retcode = subprocess.call(running_str, shell=True)
+        retcode = subprocess.check_call(running_str, shell=True, env=env)
         if retcode < 0:
             print("Child terminated by signal", -retcode, file=sys.stderr)
         else:
             print("Child returned", retcode, file=sys.stderr)
     except OSError as e:
         print("Execution failed:", e, file=sys.stderr)
+    except subprocess.CalledProcessError as e:
+        print("Command failed:", e, file=sys.stderr)
         
-def check_for_MELA():
+def check_for_MELA(env):
     """A function that checks whether or not you have the environment variables for MELA set up within your terminal
+
+    Parameters
+    ----------
+    env : dict
+        A dictionary of environment variables gotten by doing dict(os.environ) in the main process
 
     Returns
     -------
     bool
         A boolean as to whether or not MELA is properly set up
     """
-    if "LD_LIBRARY_PATH" not in os.environ: #this library path is set up by the MELA setup script
-        print("MELA environment variables have not been set up correctly")
+    # if "LD_LIBRARY_PATH" not in os.environ: #this library path is set up by the MELA setup script
+    #     print("MELA environment variables have not been set up correctly")
+    #     if 'HexUtils' in os.getcwd():
+    #         print("Run './install.sh' in the directory above HexUtils to set these up!")
+    #     else:
+    #         print("Run './setup.sh' in the MELA directory to set these up!")
+            
+    #     return False
+    
+    # return True
+
+    try:
+        env["LD_LIBRARY_PATH"]
+        return True
+    except:
         if 'HexUtils' in os.getcwd():
             print("Run './install.sh' in the directory above HexUtils to set these up!")
         else:
             print("Run './setup.sh' in the MELA directory to set these up!")
-            
         return False
-    
-    return True

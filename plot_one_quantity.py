@@ -1,7 +1,5 @@
 import argparse
 import lhe2root_methods
-import lhe2root.useful_funcs_and_constants as useful_funcs_and_constants
-import numpy as np
 
 def ran(s):
     """A function to define the range format for this program
@@ -46,7 +44,7 @@ if __name__ == "__main__":
                         help="Optional Figure Title")
     
     parser.add_argument('-c', '--cut', nargs=3, action='append',
-                        default=['M4L', '.', '.'],
+                        default=[['M4L', '.', '.']],
                         help="The cuts for your quantity. In form <name> <lower bound> <upper bound>. Replace a bound with a '.' if you do not want to place a bound there")
     
     args = parser.parse_args()

@@ -2,7 +2,7 @@ import argparse
 import lhe2root_methods
 import mplhep as hep
 import matplotlib.pyplot as plt
-import lhe2root.useful_funcs_and_constants as useful_funcs_and_constants
+import useful_funcs_and_constants
 
 
 def ran(s):

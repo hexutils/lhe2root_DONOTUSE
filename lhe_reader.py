@@ -180,14 +180,16 @@ class lhe_reader(object):
         return start_of_file + ("\n".join(cut_down)) + end_of_file #this would be placed directly into a file
     
     
-    def to_ROOT(self, argument, output_directory='./', output_prefix='LHE', verbose=False, replace=False):
+    def to_ROOT(self, argument, env, output_directory='./', output_prefix='LHE', verbose=False, replace=False,):
         """Converts a single LHE file to ROOT using the lhe2root tool
-        This works best for Higgs->4l, as that is what lhe2root is made for
+        This works best for Higgs->4l of some kind, as that is what lhe2root is made for
 
         Parameters
         ----------
         argument : str
             This should be one of the viable lhe2root options
+        env : dict
+            This contains the lhe2root environment variables by doing dict(os.environ) in a main method
         output_directory : str, optional
             The directory to output the ROOT file to, by default './'
         output_prefix : str, optional
@@ -205,15 +207,20 @@ class lhe_reader(object):
             One of the specified lhe2root configurations should be used
         FileNotFoundError
             The output directory should be a valid directory
+        TypeError
+            The environment variables should be a dictionary
         """
-        if not useful_funcs_and_constants.check_for_MELA():
-            raise FileNotFoundError("MELA Path not found!")
+        if not useful_funcs_and_constants.check_for_MELA(env):
+            raise FileNotFoundError("MELA Path not found in given environment!")
         
         if argument not in useful_funcs_and_constants.lhe_2_root_options:
             raise ValueError("Invalid LHE2ROOT option!")
         
         if not os.path.isdir(output_directory):
             raise FileNotFoundError("Output Directory is invalid!")
+        
+        if not isinstance(env, dict):
+            raise TypeError("Environment should be a dictionary i.e. dict(os.environ)")
         
         output_directory = os.path.abspath(output_directory)
         
@@ -228,7 +235,7 @@ class lhe_reader(object):
             print(outfile, "already exists!")
             if replace:
                 print("replacing", outfile)
-                useful_funcs_and_constants.safely_run_process("rm " + output_directory + output_filename)
+                useful_funcs_and_constants.safely_run_process("rm " + output_directory + output_filename, env)
             else:
                 return outfile
         
@@ -248,6 +255,6 @@ class lhe_reader(object):
             running_str += ' > /dev/null 2>&1'
         
         
-        useful_funcs_and_constants.safely_run_process(running_str)
+        useful_funcs_and_constants.safely_run_process(running_str, env)
         
         return outfile

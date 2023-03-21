@@ -40,13 +40,15 @@ def scale(scaleto, counts, bins=[]):
     return signs*counts*scaleto/np.sum(counts)
 
 
-def recursively_convert(current_directory, output_directory, argument, clean=False, verbose=False, exceptions=set(), 
+def recursively_convert(env, current_directory, output_directory, argument, clean=False, verbose=False, exceptions=set(), 
                         outfile_prefix='LHE', cut_down_to=-1, write=""):
     """This function will recurse through every directory and subdirectory in the place you call it, 
     and attempt to convert those files to ROOT files using lhe2root
 
     Parameters
     ----------
+    env : dict
+        This contains the lhe2root environment variables by doing dict(os.environ) in a main method
     current_directory : str
         The directory to start recursing downwards from
     output_directory : str
@@ -90,7 +92,7 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
     for candidate in os.listdir(current_directory):
         # print(candidate)
         candidate = os.fsdecode(candidate)
-                        
+        
         candidate = current_directory + '/' + candidate
         # print(candidate)
         
@@ -101,7 +103,7 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
         
         
         if (os.path.isdir(candidate)) and (not is_exempt): #convert all the LHE files in every directory below you that are not exempt
-            one_folder_below = recursively_convert(candidate, output_directory, argument, clean, verbose, exceptions)
+            one_folder_below = recursively_convert(env, candidate, output_directory, argument, clean, verbose, exceptions)
             cross_sections.update(one_folder_below) #updates the dictionary
         
         if candidate.split('.')[-1] != 'lhe':
@@ -113,8 +115,9 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
         
         else:            
             reader = lhe_reader.lhe_reader(candidate)
-            if cut_down_to > 0:
-                candidate = candidate.split('.')[0] + "_cut_down_to" + str(cut_down_to) + '.lhe'
+            cut_down_filename = candidate.split('.')[0] + "_cut_down_to" + str(cut_down_to) + '.lhe'
+            if cut_down_to > 0 and not os.path.isfile(candidate.split('.')[0] + "_cut_down_to" + str(cut_down_to) + '.lhe'):
+                candidate = cut_down_filename
                 if verbose:
                     print("Cutting down file to", cut_down_to, "events in file", candidate)
                 
@@ -123,7 +126,7 @@ def recursively_convert(current_directory, output_directory, argument, clean=Fal
                 
                 reader = lhe_reader.lhe_reader(candidate)#reset the reader and the candidate to the new cut down file
                 
-            outfile = reader.to_ROOT(argument, output_directory, outfile_prefix, verbose, clean)
+            outfile = reader.to_ROOT(argument, env, output_directory, outfile_prefix, verbose, clean)
             cross_sections[outfile] = reader.cross_section
     
     if write:
@@ -195,7 +198,7 @@ def plot_one_quantity(filenames, attribute, xrange, nbins=100, labels=[], norm=F
             histograms[file] = (hist_counts, hist_bins)
             
             if norm:
-                hist_counts = scale(hist_counts, 1)
+                hist_counts = scale(1, hist_counts)
                 
             if labels:
                 hep.histplot(hist_counts, hist_bins, lw=2, label=labels[n])
