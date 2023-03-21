@@ -253,14 +253,16 @@
         <span class="k">return</span> <span class="n">start_of_file</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cut_down</span><span class="p">))</span> <span class="o">+</span> <span class="n">end_of_file</span> <span class="c1">#this would be placed directly into a file</span></div>
     
     
-<div class="viewcode-block" id="lhe_reader.to_ROOT"><a class="viewcode-back" href="../lhe_reader.html#lhe_reader.lhe_reader.to_ROOT">[docs]</a>    <span class="k">def</span> <span class="nf">to_ROOT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">output_directory</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">output_prefix</span><span class="o">=</span><span class="s1">&#39;LHE&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="lhe_reader.to_ROOT"><a class="viewcode-back" href="../lhe_reader.html#lhe_reader.lhe_reader.to_ROOT">[docs]</a>    <span class="k">def</span> <span class="nf">to_ROOT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">output_directory</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">output_prefix</span><span class="o">=</span><span class="s1">&#39;LHE&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a single LHE file to ROOT using the lhe2root tool</span>
-<span class="sd">        This works best for Higgs-&gt;4l, as that is what lhe2root is made for</span>
+<span class="sd">        This works best for Higgs-&gt;4l of some kind, as that is what lhe2root is made for</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        argument : str</span>
 <span class="sd">            This should be one of the viable lhe2root options</span>
+<span class="sd">        env : dict</span>
+<span class="sd">            This contains the lhe2root environment variables by doing dict(os.environ) in a main method</span>
 <span class="sd">        output_directory : str, optional</span>
 <span class="sd">            The directory to output the ROOT file to, by default &#39;./&#39;</span>
 <span class="sd">        output_prefix : str, optional</span>
@@ -278,15 +280,20 @@
 <span class="sd">            One of the specified lhe2root configurations should be used</span>
 <span class="sd">        FileNotFoundError</span>
 <span class="sd">            The output directory should be a valid directory</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            The environment variables should be a dictionary</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">check_for_MELA</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;MELA Path not found!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">check_for_MELA</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;MELA Path not found in given environment!&quot;</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">argument</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">lhe_2_root_options</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid LHE2ROOT option!&quot;</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">output_directory</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Output Directory is invalid!&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Environment should be a dictionary i.e. dict(os.environ)&quot;</span><span class="p">)</span>
         
         <span class="n">output_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">output_directory</span><span class="p">)</span>
         
@@ -301,7 +308,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;already exists!&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">replace</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;replacing&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
-                <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">safely_run_process</span><span class="p">(</span><span class="s2">&quot;rm &quot;</span> <span class="o">+</span> <span class="n">output_directory</span> <span class="o">+</span> <span class="n">output_filename</span><span class="p">)</span>
+                <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">safely_run_process</span><span class="p">(</span><span class="s2">&quot;rm &quot;</span> <span class="o">+</span> <span class="n">output_directory</span> <span class="o">+</span> <span class="n">output_filename</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">outfile</span>
         
@@ -321,7 +328,7 @@
             <span class="n">running_str</span> <span class="o">+=</span> <span class="s1">&#39; &gt; /dev/null 2&gt;&amp;1&#39;</span>
         
         
-        <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">safely_run_process</span><span class="p">(</span><span class="n">running_str</span><span class="p">)</span>
+        <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">safely_run_process</span><span class="p">(</span><span class="n">running_str</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
         
         <span class="k">return</span> <span class="n">outfile</span></div></div>
 </pre></div>

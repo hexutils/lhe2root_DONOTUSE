@@ -83,14 +83,17 @@
 <span id="useful-funcs-and-constants-module"></span><h1>useful_funcs_and_constants module<a class="headerlink" href="#module-useful_funcs_and_constants" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="useful_funcs_and_constants.check_for_MELA">
-<span class="sig-prename descclassname"><span class="pre">useful_funcs_and_constants.</span></span><span class="sig-name descname"><span class="pre">check_for_MELA</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/useful_funcs_and_constants.html#check_for_MELA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#useful_funcs_and_constants.check_for_MELA" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">useful_funcs_and_constants.</span></span><span class="sig-name descname"><span class="pre">check_for_MELA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/useful_funcs_and_constants.html#check_for_MELA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#useful_funcs_and_constants.check_for_MELA" title="Permalink to this definition"></a></dt>
 <dd><p>A function that checks whether or not you have the environment variables for MELA set up within your terminal</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A boolean as to whether or not MELA is properly set up</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>env</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – A dictionary of environment variables gotten by doing dict(os.environ) in the main process</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)">bool</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean as to whether or not MELA is properly set up</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -112,11 +115,14 @@ Ripped from <a class="reference external" href="https://stackoverflow.com/questi
 
 <dl class="py function">
 <dt class="sig sig-object py" id="useful_funcs_and_constants.safely_run_process">
-<span class="sig-prename descclassname"><span class="pre">useful_funcs_and_constants.</span></span><span class="sig-name descname"><span class="pre">safely_run_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">running_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/useful_funcs_and_constants.html#safely_run_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#useful_funcs_and_constants.safely_run_process" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">useful_funcs_and_constants.</span></span><span class="sig-name descname"><span class="pre">safely_run_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">running_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/useful_funcs_and_constants.html#safely_run_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#useful_funcs_and_constants.safely_run_process" title="Permalink to this definition"></a></dt>
 <dd><p>Safely runs a process in the terminal with proper exception handling</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>running_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – This is the command you are passing to the terminal</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>running_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – This is the command you are passing to the terminal</p></li>
+<li><p><strong>env</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – This contains the lhe2root environment variables by doing dict(os.environ) in a main method, by default {}</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
