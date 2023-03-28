@@ -248,13 +248,15 @@ class lhe_reader(object):
             "\nN: " + "{:.4e}".format(self.num_events) + " events",
             title=titlestr, width=len(titlestr))
         
-        running_str = "python3 lhe2root.py --" + argument + " " + output_directory + output_filename + ' '
-        running_str += self.lhefile #lhe2root takes in an argument, the outname, and the input file
+        import lhe2root
+        lhe2root.main([output_directory + output_filename, self.lhefile, '--' + argument])
+        # running_str = "python3 lhe2root.py --" + argument + " " + output_directory + output_filename + ' '
+        # running_str += self.lhefile #lhe2root takes in an argument, the outname, and the input file
         
-        if not verbose:
-            running_str += ' > /dev/null 2>&1'
+        # if not verbose:
+        #     running_str += ' > /dev/null 2>&1'
         
         
-        useful_funcs_and_constants.safely_run_process(running_str, env)
+        # useful_funcs_and_constants.safely_run_process(running_str, env)
         
         return outfile

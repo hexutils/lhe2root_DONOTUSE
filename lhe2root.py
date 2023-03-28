@@ -120,8 +120,24 @@ class LHEEvent_Offshell4l(LHEEvent):
     return daughters, associated, mothers
 
   nassociatedparticles = None
-  
-if __name__ == "__main__":
+
+def main(raw_args=None):
+  """This is the main method for lhe2root. It is formatted in this way so that this method is callable by other functions!
+
+  Parameters
+  ----------
+  raw_args : list[str], optional
+      Should ANYTHING be placed here that is not None, main will parse the arguments
+      in the provided list and use those in the argument parser.
+      Should the default remain, the code will continue to use None, by default None
+
+  Raises
+  ------
+  IOError
+      If the output file already exists
+  IOError
+      If the output file doesn't exist
+  """
   parser = argparse.ArgumentParser()
   parser.add_argument("outputfile")
   parser.add_argument("inputfile", nargs="+")
@@ -144,7 +160,7 @@ if __name__ == "__main__":
   parser.add_argument("--CJLST", action="store_true")
   parser.add_argument("--MELAcalc", action="store_true")
   parser.add_argument("--reweight-to", choices="fa3-0.5")
-  args = parser.parse_args()
+  args = parser.parse_args(raw_args) #This allows the parser to take in command line arguments
 
   if os.path.exists(args.outputfile): raise IOError(args.outputfile+" already exists")
   for _ in args.inputfile:
@@ -781,3 +797,7 @@ if __name__ == "__main__":
         os.remove(args.outputfile)
       except:
         pass
+
+
+if __name__ == "__main__":
+  main() #runs the lhe2root conversion with raw args

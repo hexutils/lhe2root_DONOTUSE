@@ -15,13 +15,13 @@ if __name__ == '__main__':
                         help="The argument to be passed to LHE2ROOT.py")
 
     parser.add_argument('-c',"--clean", action='store_true',
-                        help="remove all previously produced ROOT files and re-create them")
+                        help="removes all previously produced ROOT files and re-creates them in the specified directory")
 
     parser.add_argument('-cd', '--currentDirectory', type=str, default=os.getcwd(),
                         help="The directory you would like to recurse down from")
 
     parser.add_argument('-o', '--output', type=str, default='./',
-                        help="The directory you would like to output to")
+                        help="The directory you would like to output both ROOT files and cross sections to")
 
     parser.add_argument('-e','--exceptions', nargs='*',
                         help="Any folder exceptions you want to make to conversion. Useful if you have different argument types for LHE files",
