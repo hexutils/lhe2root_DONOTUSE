@@ -40,7 +40,7 @@ def scale(scaleto, counts, bins=[]):
     return signs*counts*scaleto/np.sum(counts)
 
 
-def recursively_convert(env, current_directory, output_directory, argument, clean=False, verbose=False, exceptions=set(), 
+def recursively_convert(env, current_directory, output_directory, argument, other_args=[], clean=False, verbose=False, exceptions=set(), 
                         outfile_prefix='LHE', cut_down_to=-1, write=""):
     """This function will recurse through every directory and subdirectory in the place you call it, 
     and attempt to convert those files to ROOT files using lhe2root
@@ -54,7 +54,9 @@ def recursively_convert(env, current_directory, output_directory, argument, clea
     output_directory : str
         The directory to output results to
     argument : str
-        the lhe2root argument to use (see lhe_2_root_options in lhe_constants)
+        the lhe2root conversion option to use (see lhe_2_root_options in useful_funcs_and_constants)
+    other_args : list[str]
+        The other lhe2root arguments that can be used (see lhe_2_root_args in useful_funcs_and_constants), by default []
     clean : bool, optional
         If True, this function will wipe any old conversion and re-convert the files, by default False
     verbose : bool, optional
@@ -103,7 +105,7 @@ def recursively_convert(env, current_directory, output_directory, argument, clea
         
         
         if (os.path.isdir(candidate)) and (not is_exempt): #convert all the LHE files in every directory below you that are not exempt
-            one_folder_below = recursively_convert(env, candidate, output_directory, argument, clean, verbose, exceptions)
+            one_folder_below = recursively_convert(env, candidate, output_directory, argument, other_args, clean, verbose, exceptions)
             cross_sections.update(one_folder_below) #updates the dictionary
         
         if candidate.split('.')[-1] != 'lhe':
@@ -126,7 +128,7 @@ def recursively_convert(env, current_directory, output_directory, argument, clea
                 
                 reader = lhe_reader.lhe_reader(candidate)#reset the reader and the candidate to the new cut down file
                 
-            outfile = reader.to_ROOT(argument, env, output_directory, outfile_prefix, verbose, clean)
+            outfile = reader.to_ROOT(argument, env, other_args, output_directory, outfile_prefix, verbose, clean)
             cross_sections[outfile] = reader.cross_section
     
     if write:
@@ -141,7 +143,7 @@ def recursively_convert(env, current_directory, output_directory, argument, clea
 
 
 def plot_one_quantity(filenames, attribute, xrange, nbins=100, labels=[], norm=False, title="", 
-                      cuts={}):
+                      cuts={}, perFile=False):
     """This function plots one quantity of your choice from ROOT files!
 
     Parameters
@@ -162,6 +164,9 @@ def plot_one_quantity(filenames, attribute, xrange, nbins=100, labels=[], norm=F
         An extra "title" on the x label that is concatenated, by default ""
     cuts : dict
         A dictionary containing the upper and lower level cuts that you are making on each quantity, by default {}
+    perFile : bool
+        Whether you want to have a single plot for each file, by default False
+        
     Returns
     -------
     dict
@@ -211,13 +216,21 @@ def plot_one_quantity(filenames, attribute, xrange, nbins=100, labels=[], norm=F
                 plt.xlabel(useful_funcs_and_constants.beautified_title[attribute] + title, horizontalalignment='center', fontsize=30)
             else:
                 plt.xlabel(attribute + title, horizontalalignment='center', fontsize=30)
-                
-    if labels:
-        plt.legend()
         
-    plt.tight_layout()
-    plt.savefig(attribute + '.png')
-    plt.show()
+        if perFile:
+            if labels:
+                plt.legend()
+            plt.tight_layout()
+            file = file.split('/')[-1].split('.')[0]
+            plt.savefig(attribute + "_" + file + '.png')
+            plt.cla()
+    
+    if not perFile:            
+        if labels:
+            plt.legend()
+            
+        plt.tight_layout()
+        plt.savefig(attribute + '.png')
     
     return histograms
 
@@ -278,9 +291,9 @@ def plot_interference(mixed_file, pure1, pure2, pure1Name, pure2Name, attribute,
     # print('%E' % CrossSections[pure1][0], '%E' % CrossSections[pure2][0], '%E' % np.sqrt(CrossSections[pure1][0]*CrossSections[pure2][0])
     #     , '%E' % CrossSections[mixed_file][0])
     
-    interf_hist = scale(interf_hist, cross_sections[mixed_file])
-    BW1_hist = scale(BW1_hist, cross_sections[pure1])
-    BW2_hist = scale(BW2_hist, cross_sections[pure2])
+    interf_hist = scale(cross_sections[mixed_file], interf_hist)
+    BW1_hist = scale(cross_sections[pure1], BW1_hist)
+    BW2_hist = scale(cross_sections[pure2], BW2_hist)
     
     interf_actual = interf_hist - BW1_hist - BW2_hist
     
@@ -293,13 +306,12 @@ def plot_interference(mixed_file, pure1, pure2, pure1Name, pure2Name, attribute,
     # print(interf_hist)
     
     hep.histplot(interf_actual, bins, label=pure1Name + '/' + pure2Name + ' Interference', lw=2)
-    
     plt.xlabel(useful_funcs_and_constants.beautified_title[attribute] + " " + title, horizontalalignment='center', fontsize=20)
     plt.xlim(useful_funcs_and_constants.ranges[attribute])
     plt.legend()
     plt.tight_layout()
-    
-    plt.show()
+    plt.savefig('Interference_between_2.png')
+    # plt.show()
     
     return interf_actual, bins
 

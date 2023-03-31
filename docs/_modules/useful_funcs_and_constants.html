@@ -76,7 +76,7 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="n">lhe_2_root_options</span> <span class="o">=</span> <span class="p">[</span> <span class="c1">#these are all the possible options for lhe2root</span>
+<span class="n">lhe_2_root_options</span> <span class="o">=</span> <span class="p">[</span> <span class="c1">#these are all the possible mutually exclusive options for lhe2root</span>
     <span class="s1">&#39;vbf&#39;</span><span class="p">,</span>
     <span class="s1">&#39;vbf_withdecay&#39;</span><span class="p">,</span>
     <span class="s1">&#39;zh&#39;</span><span class="p">,</span>
@@ -88,13 +88,16 @@
     <span class="s1">&#39;wh&#39;</span><span class="p">,</span>
     <span class="s1">&#39;ggH4l&#39;</span><span class="p">,</span>
     <span class="s1">&#39;ggH4lMG&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">lhe_2_root_args</span> <span class="o">=</span> <span class="p">[</span> <span class="c1">#these are all the other options for lhe2root</span>
     <span class="s1">&#39;use-flavor&#39;</span><span class="p">,</span>
     <span class="s1">&#39;merge_photon&#39;</span><span class="p">,</span>
     <span class="s1">&#39;calc_prodprob&#39;</span><span class="p">,</span>
     <span class="s1">&#39;calc_decayprob&#39;</span><span class="p">,</span>
     <span class="s1">&#39;CJLST&#39;</span><span class="p">,</span>
     <span class="s1">&#39;MELAcalc&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;reweight-to&#39;</span>
+    <span class="s1">&#39;reweight-to&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;verbose&#39;</span>
 <span class="p">]</span>
 
 <span class="n">beautified_title</span> <span class="o">=</span> <span class="p">{</span> <span class="c1"># a dictionary to beautify your feeble and puny existence</span>

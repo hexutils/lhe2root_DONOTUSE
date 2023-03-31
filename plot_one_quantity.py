@@ -47,9 +47,11 @@ if __name__ == "__main__":
                         default=[['M4L', '.', '.']],
                         help="The cuts for your quantity. In form <name> <lower bound> <upper bound>. Replace a bound with a '.' if you do not want to place a bound there")
     
+    parser.add_argument('-p', '--perFile', action="store_true",
+                        help="Activate if you want a plot for each file")
     args = parser.parse_args()
     
     cuts = lhe2root_methods.cut_ranges_to_dict(args.cut)
     
     lhe2root_methods.plot_one_quantity(args.filenames, args.value, args.range, args.nbins, 
-                                       args.labels, args.norm, args.title, cuts=cuts)
+                                       args.labels, args.norm, args.title, cuts=cuts, perFile=args.perFile)

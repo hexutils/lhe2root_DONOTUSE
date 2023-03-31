@@ -180,7 +180,7 @@ class lhe_reader(object):
         return start_of_file + ("\n".join(cut_down)) + end_of_file #this would be placed directly into a file
     
     
-    def to_ROOT(self, argument, env, output_directory='./', output_prefix='LHE', verbose=False, replace=False,):
+    def to_ROOT(self, argument, env, other_args=[], output_directory='./', output_prefix='LHE', verbose=False, replace=False,):
         """Converts a single LHE file to ROOT using the lhe2root tool
         This works best for Higgs->4l of some kind, as that is what lhe2root is made for
 
@@ -190,6 +190,8 @@ class lhe_reader(object):
             This should be one of the viable lhe2root options
         env : dict
             This contains the lhe2root environment variables by doing dict(os.environ) in a main method
+        other_args : list[str]
+            The other lhe2root arguments that can be used (see lhe_2_root_args in useful_funcs_and_constants), by default []
         output_directory : str, optional
             The directory to output the ROOT file to, by default './'
         output_prefix : str, optional
@@ -205,6 +207,8 @@ class lhe_reader(object):
             MELA pathways should be configured to use LHE2ROOT
         ValueError
             One of the specified lhe2root configurations should be used
+        ValueError
+            One of the specified lhe2root arguments should be used
         FileNotFoundError
             The output directory should be a valid directory
         TypeError
@@ -215,6 +219,11 @@ class lhe_reader(object):
         
         if argument not in useful_funcs_and_constants.lhe_2_root_options:
             raise ValueError("Invalid LHE2ROOT option!")
+        
+        print(other_args)
+        for arg in other_args:
+            if arg not in useful_funcs_and_constants.lhe_2_root_args:
+                raise ValueError("Invalid LHE2ROOT option!")
         
         if not os.path.isdir(output_directory):
             raise FileNotFoundError("Output Directory is invalid!")
@@ -243,13 +252,22 @@ class lhe_reader(object):
         
         useful_funcs_and_constants.print_msg_box("Input name: " + self.lhefile.split('/')[-1] + #This is the big message box seen per LHE file found
             "\nOutput: " + str(os.path.relpath(outfile)) + 
-            "\nArgument: " + argument + 
+            "\nArguments: " + argument +
+            (", " + ", ".join(other_args) if other_args else "") +
             "\n\u03C3: " + "{:.4e}".format(self.cross_section[0]) + " \u00b1 " + "{:.2e}".format(self.cross_section[1]) + 
             "\nN: " + "{:.4e}".format(self.num_events) + " events",
             title=titlestr, width=len(titlestr))
         
         import lhe2root
-        lhe2root.main([output_directory + output_filename, self.lhefile, '--' + argument])
+        
+        argList = [output_directory + output_filename, self.lhefile, '--' + argument]
+        argList += '--'.join(other_args)
+        
+        if not verbose:
+            argList += ['--verbose']
+        
+        print(argList)
+        lhe2root.main(argList)
         # running_str = "python3 lhe2root.py --" + argument + " " + output_directory + output_filename + ' '
         # running_str += self.lhefile #lhe2root takes in an argument, the outname, and the input file
         

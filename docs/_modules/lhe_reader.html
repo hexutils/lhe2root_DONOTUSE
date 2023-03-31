@@ -253,7 +253,7 @@
         <span class="k">return</span> <span class="n">start_of_file</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cut_down</span><span class="p">))</span> <span class="o">+</span> <span class="n">end_of_file</span> <span class="c1">#this would be placed directly into a file</span></div>
     
     
-<div class="viewcode-block" id="lhe_reader.to_ROOT"><a class="viewcode-back" href="../lhe_reader.html#lhe_reader.lhe_reader.to_ROOT">[docs]</a>    <span class="k">def</span> <span class="nf">to_ROOT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">output_directory</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">output_prefix</span><span class="o">=</span><span class="s1">&#39;LHE&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,):</span>
+<div class="viewcode-block" id="lhe_reader.to_ROOT"><a class="viewcode-back" href="../lhe_reader.html#lhe_reader.lhe_reader.to_ROOT">[docs]</a>    <span class="k">def</span> <span class="nf">to_ROOT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">other_args</span><span class="o">=</span><span class="p">[],</span> <span class="n">output_directory</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">output_prefix</span><span class="o">=</span><span class="s1">&#39;LHE&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a single LHE file to ROOT using the lhe2root tool</span>
 <span class="sd">        This works best for Higgs-&gt;4l of some kind, as that is what lhe2root is made for</span>
 
@@ -263,6 +263,8 @@
 <span class="sd">            This should be one of the viable lhe2root options</span>
 <span class="sd">        env : dict</span>
 <span class="sd">            This contains the lhe2root environment variables by doing dict(os.environ) in a main method</span>
+<span class="sd">        other_args : list[str]</span>
+<span class="sd">            The other lhe2root arguments that can be used (see lhe_2_root_args in useful_funcs_and_constants), by default []</span>
 <span class="sd">        output_directory : str, optional</span>
 <span class="sd">            The directory to output the ROOT file to, by default &#39;./&#39;</span>
 <span class="sd">        output_prefix : str, optional</span>
@@ -278,6 +280,8 @@
 <span class="sd">            MELA pathways should be configured to use LHE2ROOT</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            One of the specified lhe2root configurations should be used</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            One of the specified lhe2root arguments should be used</span>
 <span class="sd">        FileNotFoundError</span>
 <span class="sd">            The output directory should be a valid directory</span>
 <span class="sd">        TypeError</span>
@@ -288,6 +292,11 @@
         
         <span class="k">if</span> <span class="n">argument</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">lhe_2_root_options</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid LHE2ROOT option!&quot;</span><span class="p">)</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="n">other_args</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">other_args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">lhe_2_root_args</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid LHE2ROOT option!&quot;</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">output_directory</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Output Directory is invalid!&quot;</span><span class="p">)</span>
@@ -316,19 +325,30 @@
         
         <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">print_msg_box</span><span class="p">(</span><span class="s2">&quot;Input name: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhefile</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="c1">#This is the big message box seen per LHE file found</span>
             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Output: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span> <span class="o">+</span> 
-            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Argument: &quot;</span> <span class="o">+</span> <span class="n">argument</span> <span class="o">+</span> 
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Arguments: &quot;</span> <span class="o">+</span> <span class="n">argument</span> <span class="o">+</span>
+            <span class="p">(</span><span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">other_args</span><span class="p">)</span> <span class="k">if</span> <span class="n">other_args</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span>
             <span class="s2">&quot;</span><span class="se">\n\u03C3</span><span class="s2">: &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:.4e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\u00b1</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:.2e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> 
             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">N: &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:.4e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_events</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; events&quot;</span><span class="p">,</span>
             <span class="n">title</span><span class="o">=</span><span class="n">titlestr</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">titlestr</span><span class="p">))</span>
         
-        <span class="n">running_str</span> <span class="o">=</span> <span class="s2">&quot;python3 lhe2root.py --&quot;</span> <span class="o">+</span> <span class="n">argument</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">output_directory</span> <span class="o">+</span> <span class="n">output_filename</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
-        <span class="n">running_str</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhefile</span> <span class="c1">#lhe2root takes in an argument, the outname, and the input file</span>
+        <span class="kn">import</span> <span class="nn">lhe2root</span>
+        
+        <span class="n">argList</span> <span class="o">=</span> <span class="p">[</span><span class="n">output_directory</span> <span class="o">+</span> <span class="n">output_filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhefile</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span> <span class="o">+</span> <span class="n">argument</span><span class="p">]</span>
+        <span class="n">argList</span> <span class="o">+=</span> <span class="s1">&#39;--&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">other_args</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="ow">not</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">running_str</span> <span class="o">+=</span> <span class="s1">&#39; &gt; /dev/null 2&gt;&amp;1&#39;</span>
+            <span class="n">argList</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;--verbose&#39;</span><span class="p">]</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="n">argList</span><span class="p">)</span>
+        <span class="n">lhe2root</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">argList</span><span class="p">)</span>
+        <span class="c1"># running_str = &quot;python3 lhe2root.py --&quot; + argument + &quot; &quot; + output_directory + output_filename + &#39; &#39;</span>
+        <span class="c1"># running_str += self.lhefile #lhe2root takes in an argument, the outname, and the input file</span>
+        
+        <span class="c1"># if not verbose:</span>
+        <span class="c1">#     running_str += &#39; &gt; /dev/null 2&gt;&amp;1&#39;</span>
         
         
-        <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">safely_run_process</span><span class="p">(</span><span class="n">running_str</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+        <span class="c1"># useful_funcs_and_constants.safely_run_process(running_str, env)</span>
         
         <span class="k">return</span> <span class="n">outfile</span></div></div>
 </pre></div>

@@ -13,6 +13,10 @@ if __name__ == '__main__':
     parser.add_argument('argument', type=str,
                         choices=useful_funcs_and_constants.lhe_2_root_options,
                         help="The argument to be passed to LHE2ROOT.py")
+    
+    parser.add_argument('-ea','--extra', type=str, nargs='+', default=[],
+                        choices=useful_funcs_and_constants.lhe_2_root_args,
+                        help="These are the extra arguments that can be passed to lhe2root")
 
     parser.add_argument('-c',"--clean", action='store_true',
                         help="removes all previously produced ROOT files and re-creates them in the specified directory")
@@ -57,4 +61,4 @@ if __name__ == '__main__':
     file_cross_sections = lhe2root_methods.recursively_convert(current_directory=current_directory, output_directory=args.output, 
                                                                 argument=args.argument, verbose=args.verbose, 
                                                                 exceptions=exceptions, write=args.write, clean=args.clean,
-                                                                cut_down_to=args.cutDown, env=env)
+                                                                cut_down_to=args.cutDown, env=env, other_args=args.extra)

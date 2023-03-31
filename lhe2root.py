@@ -6,6 +6,7 @@ import argparse, os
 from array import array
 import itertools
 import numpy as np
+import sys
 
 import ROOT
 
@@ -122,14 +123,15 @@ class LHEEvent_Offshell4l(LHEEvent):
   nassociatedparticles = None
 
 def main(raw_args=None):
-  """This is the main method for lhe2root. It is formatted in this way so that this method is callable by other functions!
+  """This is the main method for lhe2root. It is formatted in this way so that this method
+  is callable by functions in other files! (Namely lhe_reader!)
 
   Parameters
   ----------
   raw_args : list[str], optional
       Should ANYTHING be placed here that is not None, main will parse the arguments
-      in the provided list and use those in the argument parser.
-      Should the default remain, the code will continue to use None, by default None
+      in the provided list of raw_args and use those in the argument parser.
+      Should None be passed, the code will use command line arguments, by default None
 
   Raises
   ------
@@ -160,11 +162,17 @@ def main(raw_args=None):
   parser.add_argument("--CJLST", action="store_true")
   parser.add_argument("--MELAcalc", action="store_true")
   parser.add_argument("--reweight-to", choices="fa3-0.5")
-  args = parser.parse_args(raw_args) #This allows the parser to take in command line arguments
+  parser.add_argument('-v', '--verbose', action="store_true") #if enabled it will be verbose
+  args = parser.parse_args(raw_args) #This allows the parser to take in command line arguments if raw_args=None
 
-  if os.path.exists(args.outputfile): raise IOError(args.outputfile+" already exists")
+  if not args.verbose:
+    f = open(os.devnull, 'w')
+    sys.stdout = f
+  if os.path.exists(args.outputfile): 
+    raise IOError(args.outputfile+" already exists")
   for _ in args.inputfile:
-    if not os.path.exists(_) and not args.CJLST: raise IOError(_+" doesn't exist")
+    if not os.path.exists(_) and not args.CJLST: 
+      raise IOError(_+" doesn't exist")
     
   bad = False
 

@@ -3,7 +3,7 @@ import subprocess
 import sys
 import os
 
-lhe_2_root_options = [ #these are all the possible options for lhe2root
+lhe_2_root_options = [ #these are all the possible mutually exclusive options for lhe2root
     'vbf',
     'vbf_withdecay',
     'zh',
@@ -15,13 +15,16 @@ lhe_2_root_options = [ #these are all the possible options for lhe2root
     'wh',
     'ggH4l',
     'ggH4lMG',
+]
+lhe_2_root_args = [ #these are all the other options for lhe2root
     'use-flavor',
     'merge_photon',
     'calc_prodprob',
     'calc_decayprob',
     'CJLST',
     'MELAcalc',
-    'reweight-to'
+    'reweight-to',
+    'verbose'
 ]
 
 beautified_title = { # a dictionary to beautify your feeble and puny existence

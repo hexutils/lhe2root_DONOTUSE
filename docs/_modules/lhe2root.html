@@ -79,6 +79,7 @@
 <span class="kn">from</span> <span class="nn">array</span> <span class="kn">import</span> <span class="n">array</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">import</span> <span class="nn">ROOT</span>
 
@@ -193,8 +194,25 @@
     <span class="k">return</span> <span class="n">daughters</span><span class="p">,</span> <span class="n">associated</span><span class="p">,</span> <span class="n">mothers</span></div>
 
   <span class="n">nassociatedparticles</span> <span class="o">=</span> <span class="kc">None</span></div>
-  
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../lhe2root.html#lhe2root.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">raw_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;This is the main method for lhe2root. It is formatted in this way so that this method</span>
+<span class="sd">  is callable by functions in other files! (Namely lhe_reader!)</span>
+
+<span class="sd">  Parameters</span>
+<span class="sd">  ----------</span>
+<span class="sd">  raw_args : list[str], optional</span>
+<span class="sd">      Should ANYTHING be placed here that is not None, main will parse the arguments</span>
+<span class="sd">      in the provided list of raw_args and use those in the argument parser.</span>
+<span class="sd">      Should None be passed, the code will use command line arguments, by default None</span>
+
+<span class="sd">  Raises</span>
+<span class="sd">  ------</span>
+<span class="sd">  IOError</span>
+<span class="sd">      If the output file already exists</span>
+<span class="sd">  IOError</span>
+<span class="sd">      If the output file doesn&#39;t exist</span>
+<span class="sd">  &quot;&quot;&quot;</span>
   <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
   <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;outputfile&quot;</span><span class="p">)</span>
   <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;inputfile&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
@@ -217,11 +235,17 @@
   <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--CJLST&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
   <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--MELAcalc&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
   <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--reweight-to&quot;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="s2">&quot;fa3-0.5&quot;</span><span class="p">)</span>
-  <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+  <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span> <span class="c1">#if enabled it will be verbose</span>
+  <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">raw_args</span><span class="p">)</span> <span class="c1">#This allows the parser to take in command line arguments if raw_args=None</span>
 
-  <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outputfile</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outputfile</span><span class="o">+</span><span class="s2">&quot; already exists&quot;</span><span class="p">)</span>
+  <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">f</span>
+  <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outputfile</span><span class="p">):</span> 
+    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outputfile</span><span class="o">+</span><span class="s2">&quot; already exists&quot;</span><span class="p">)</span>
   <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">inputfile</span><span class="p">:</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">CJLST</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">_</span><span class="o">+</span><span class="s2">&quot; doesn&#39;t exist&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">CJLST</span><span class="p">:</span> 
+      <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">_</span><span class="o">+</span><span class="s2">&quot; doesn&#39;t exist&quot;</span><span class="p">)</span>
     
   <span class="n">bad</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -853,7 +877,11 @@
       <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outputfile</span><span class="p">)</span>
       <span class="k">except</span><span class="p">:</span>
-        <span class="k">pass</span>
+        <span class="k">pass</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+  <span class="n">main</span><span class="p">()</span> <span class="c1">#runs the lhe2root conversion with raw args</span>
 </pre></div>
 
            </div>

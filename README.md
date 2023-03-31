@@ -3,7 +3,7 @@ This contains lhe2root, a script for converting lhe files to root files using JH
 
 ## Installation Location
 
-This package should be installed within an instance of JHUGenMELA. The recommended location, which would require no edits, would be the same directory as, or a directory below, `mela.py` abd`pythonmelautils.py` within the main HexUtils repo. These are normally under HexUtils/AnalysisTools/JHUGenMELA/MELA/python. However, as long as `LD_LIBRARY_PATH` is set, which can be checked using the `check_for_MELA` function, python should be able to find MELA's location.
+This package should be installed within an instance of JHUGenMELA. The recommended location, which would require no edits, would be the same directory as, or a directory below, `mela.py` and `pythonmelautils.py` within the main HexUtils repo. These are normally under HexUtils/AnalysisTools/JHUGenMELA/MELA/python. However, as long as `LD_LIBRARY_PATH` is set, which can be checked using the `check_for_MELA` function, python should be able to find MELA's location.
 
 ## Programs Within This Package
 
@@ -16,7 +16,7 @@ This package should be installed within an instance of JHUGenMELA. The recommend
 - `plot_interference.py`
   - Given a series of ROOT file interference triplets (one mixed sample file and 2 pure sample files i.e. AB, A, and B) as command line arguments, this program will plot their interference and compare the interference terms for each triplet against each other
 
-- `slice_lhe_files.py`
+- `lhe_reader.py`
   - Given a series of LHE files as command line arguments and an integer number of events this program will cut all of the files given down to the number of events requested
 
 ## Useful Functions
@@ -34,11 +34,13 @@ plot_one_quantity(filenames, attribute, xrange, nbins=100, labels=[], norm=False
 plot_interference(mixed_file, pure1, pure2, pure1Name, pure2Name, attribute, cross_sections, nbins=100, title="")
 ```
 
-The following functions are included in `lhfile_methods.py`
+The following functions are included in the `lhe_reader` class in `lhe_reader.py`:
 ```python
-get_all_events(lhefile)
-get_non_event_portions(lhefile)
-cut_down_to_size(lhefile, n, verbose=False)
+lhe_reader.cross_section()
+lhe_reader.all_events()
+lhe_reader.non_event_portions()
+lhe_reader.cut_down_to_size(n, verbose=False)
+lhe_reader.to_ROOT(argument, env, output_directory='./', output_prefix='LHE', verbose=False, replace=False)
 ```
 
 ## Useful Defined Constants

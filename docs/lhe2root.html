@@ -56,6 +56,7 @@
 <li><a class="reference internal" href="#lhe2root.LHEEvent_Offshell4l.nassociatedparticles"><code class="docutils literal notranslate"><span class="pre">LHEEvent_Offshell4l.nassociatedparticles</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#lhe2root.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 <li><a class="reference internal" href="#lhe2root.tlvfromptetaphim"><code class="docutils literal notranslate"><span class="pre">tlvfromptetaphim()</span></code></a></li>
 </ul>
 </li>
@@ -154,6 +155,26 @@
 <span class="sig-name descname"><span class="pre">nassociatedparticles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#lhe2root.LHEEvent_Offshell4l.nassociatedparticles" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lhe2root.main">
+<span class="sig-prename descclassname"><span class="pre">lhe2root.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lhe2root.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lhe2root.main" title="Permalink to this definition"></a></dt>
+<dd><p>This is the main method for lhe2root. It is formatted in this way so that this method
+is callable by functions in other files! (Namely lhe_reader!)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>]</em><em>, </em><em>optional</em>) – Should ANYTHING be placed here that is not None, main will parse the arguments
+in the provided list of raw_args and use those in the argument parser.
+Should None be passed, the code will use command line arguments, by default None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IOError" title="(in Python v3.11)"><strong>IOError</strong></a> – If the output file already exists</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IOError" title="(in Python v3.11)"><strong>IOError</strong></a> – If the output file doesn’t exist</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
