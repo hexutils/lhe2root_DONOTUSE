@@ -187,7 +187,7 @@
                 <span class="k">return</span> <span class="kc">True</span>
         
         <span class="k">return</span> <span class="kc">False</span></div>
-    
+     
 <div class="viewcode-block" id="lhe_reader.__str__"><a class="viewcode-back" href="../lhe_reader.html#lhe_reader.lhe_reader.__str__">[docs]</a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Function toString that displays the number of events and the cross section of an LHE file</span>
 
@@ -202,7 +202,7 @@
         <span class="n">to_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\t\u03C3</span><span class="s2">: &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cross_section</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="c1">#\u03C3 is the unicode for sigma</span>
         <span class="k">return</span> <span class="n">to_str</span></div>
 
-<div class="viewcode-block" id="lhe_reader.cut_down_to_size"><a class="viewcode-back" href="../lhe_reader.html#lhe_reader.lhe_reader.cut_down_to_size">[docs]</a>    <span class="k">def</span> <span class="nf">cut_down_to_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shuffled</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="lhe_reader.cut_down_to_size"><a class="viewcode-back" href="../lhe_reader.html#lhe_reader.lhe_reader.cut_down_to_size">[docs]</a>    <span class="k">def</span> <span class="nf">cut_down_to_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shuffled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dump</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cuts the number of events in an LHE file down to n events while preserving other aspects of the file</span>
 <span class="sd">        Outputs a string that should be placed in a file of your choice</span>
 
@@ -213,7 +213,9 @@
 <span class="sd">        verbose : bool, optional</span>
 <span class="sd">            Whether you want the function to be verbose, by default False</span>
 <span class="sd">        shuffled : bool, optional</span>
-<span class="sd">            Whether you want the lhe files to be shuffled before sampling them</span>
+<span class="sd">            Whether you want the lhe files to be shuffled before sampling them, by default False</span>
+<span class="sd">        dump : str, optional</span>
+<span class="sd">            Place a filename here WITHOUT the .lhe extension if you want to dump the sliced file with the filename of dump, by default &quot;&quot;</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -250,7 +252,15 @@
             
         <span class="n">cut_down</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_events</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">shuffled</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_events</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
         
-        <span class="k">return</span> <span class="n">start_of_file</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cut_down</span><span class="p">))</span> <span class="o">+</span> <span class="n">end_of_file</span> <span class="c1">#this would be placed directly into a file</span></div>
+        <span class="n">written_file</span> <span class="o">=</span> <span class="n">start_of_file</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cut_down</span><span class="p">))</span> <span class="o">+</span> <span class="n">end_of_file</span>
+        
+        <span class="k">if</span> <span class="n">dump</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dump</span> <span class="o">+</span> <span class="s1">&#39;.lhe&#39;</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dump</span><span class="o">+</span><span class="s1">&#39;.lhe&#39;</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">written_file</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dump</span> <span class="o">+</span> <span class="s1">&#39;.lhe&#39;</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">dump</span> <span class="o">+</span> <span class="s1">&#39;.lhe already exists! Not dumping file.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">written_file</span> <span class="c1">#this would be placed directly into a file</span></div>
     
     
 <div class="viewcode-block" id="lhe_reader.to_ROOT"><a class="viewcode-back" href="../lhe_reader.html#lhe_reader.lhe_reader.to_ROOT">[docs]</a>    <span class="k">def</span> <span class="nf">to_ROOT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">other_args</span><span class="o">=</span><span class="p">[],</span> <span class="n">output_directory</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">output_prefix</span><span class="o">=</span><span class="s1">&#39;LHE&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,):</span>
@@ -293,7 +303,8 @@
         <span class="k">if</span> <span class="n">argument</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">lhe_2_root_options</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid LHE2ROOT option!&quot;</span><span class="p">)</span>
         
-        <span class="nb">print</span><span class="p">(</span><span class="n">other_args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">other_args</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Other arguments being used:&quot;</span><span class="p">,</span> <span class="n">other_args</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">other_args</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">arg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">useful_funcs_and_constants</span><span class="o">.</span><span class="n">lhe_2_root_args</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid LHE2ROOT option!&quot;</span><span class="p">)</span>

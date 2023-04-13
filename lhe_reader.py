@@ -114,7 +114,7 @@ class lhe_reader(object):
                 return True
         
         return False
-    
+     
     def __str__(self) -> str:
         """Function toString that displays the number of events and the cross section of an LHE file
 
@@ -129,7 +129,7 @@ class lhe_reader(object):
         to_str += "\n\t\u03C3: " + "{:e}".format(self.cross_section[0]) + "\n" #\u03C3 is the unicode for sigma
         return to_str
 
-    def cut_down_to_size(self, n, verbose=False, shuffled=False):
+    def cut_down_to_size(self, n, verbose=False, shuffled=False, dump=""):
         """Cuts the number of events in an LHE file down to n events while preserving other aspects of the file
         Outputs a string that should be placed in a file of your choice
 
@@ -140,7 +140,9 @@ class lhe_reader(object):
         verbose : bool, optional
             Whether you want the function to be verbose, by default False
         shuffled : bool, optional
-            Whether you want the lhe files to be shuffled before sampling them
+            Whether you want the lhe files to be shuffled before sampling them, by default False
+        dump : str, optional
+            Place a filename here WITHOUT the .lhe extension if you want to dump the sliced file with the filename of dump, by default ""
 
         Returns
         -------
@@ -177,7 +179,15 @@ class lhe_reader(object):
             
         cut_down = np.random.choice(self.all_events, n) if shuffled else self.all_events[:n]
         
-        return start_of_file + ("\n".join(cut_down)) + end_of_file #this would be placed directly into a file
+        written_file = start_of_file + ("\n".join(cut_down)) + end_of_file
+        
+        if dump and not os.path.isfile(dump + '.lhe'):
+            with open(dump+'.lhe', 'w+') as f:
+                f.write(written_file)
+        elif os.path.isfile(dump + '.lhe'):
+            warnings.warn('\n'+dump + '.lhe already exists! Not dumping file.\n', UserWarning)
+        
+        return written_file #this would be placed directly into a file
     
     
     def to_ROOT(self, argument, env, other_args=[], output_directory='./', output_prefix='LHE', verbose=False, replace=False,):
@@ -220,7 +230,8 @@ class lhe_reader(object):
         if argument not in useful_funcs_and_constants.lhe_2_root_options:
             raise ValueError("Invalid LHE2ROOT option!")
         
-        print(other_args)
+        if other_args:
+            print("Other arguments being used:", other_args)
         for arg in other_args:
             if arg not in useful_funcs_and_constants.lhe_2_root_args:
                 raise ValueError("Invalid LHE2ROOT option!")

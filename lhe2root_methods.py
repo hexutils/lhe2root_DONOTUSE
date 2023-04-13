@@ -261,8 +261,13 @@ def plot_interference(mixed_file, pure1, pure2, pure1Name, pure2Name, attribute,
 
     Returns
     -------
-    _type_
+    Tuple(numpy.array)
         The interference portion between the three plots
+        
+    Raises
+    ------
+    ValueError
+        If there is a column listed that is not found
     """
     
     mixed_file = os.path.abspath(mixed_file)
@@ -275,7 +280,7 @@ def plot_interference(mixed_file, pure1, pure2, pure1Name, pure2Name, attribute,
         interf_sample = interf[interf.keys()[0]].arrays(library='pd')
         
     if attribute not in interf_sample.columns:
-        return
+        raise ValueError(attribute + " not in file!")
         
     with uproot.open(pure1) as rawBW1:
         BW1_sample = rawBW1[rawBW1.keys()[0]].arrays(library='pd')
@@ -284,7 +289,7 @@ def plot_interference(mixed_file, pure1, pure2, pure1Name, pure2Name, attribute,
         BW2_sample = rawBW2[rawBW2.keys()[0]].arrays(library='pd')
         
     
-    interf_hist, bins = np.histogram(interf_sample[attribute], range=useful_funcs_and_constants.ranges[attribute], bins=nbins)
+    interf_hist, bins = np.histogram(interf_sample[attribute], range=useful_funcs_and_constants.ranges[attribute], bins=nbins) #edit these ranges to your heart's desire!
     BW1_hist, _ = np.histogram(BW1_sample[attribute], range=useful_funcs_and_constants.ranges[attribute], bins=bins)
     BW2_hist, _ = np.histogram(BW2_sample[attribute], range=useful_funcs_and_constants.ranges[attribute], bins=bins)
     

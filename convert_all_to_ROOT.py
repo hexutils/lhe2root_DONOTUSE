@@ -25,7 +25,7 @@ if __name__ == '__main__':
                         help="The directory you would like to recurse down from")
 
     parser.add_argument('-o', '--output', type=str, default='./',
-                        help="The directory you would like to output both ROOT files and cross sections to")
+                        help="The directory you would like to output both ROOT files and cross sections to. Set to 0 if you want the output to equal the input")
 
     parser.add_argument('-e','--exceptions', nargs='*',
                         help="Any folder exceptions you want to make to conversion. Useful if you have different argument types for LHE files",
@@ -57,6 +57,9 @@ if __name__ == '__main__':
         print("Current OS Environment:")
         [print(i,":",j,"\n") for i,j in env.items()]
         raise FileNotFoundError("MELA path not found!")
+    
+    if args.output == '0':
+        args.output = current_directory
     
     file_cross_sections = lhe2root_methods.recursively_convert(current_directory=current_directory, output_directory=args.output, 
                                                                 argument=args.argument, verbose=args.verbose, 

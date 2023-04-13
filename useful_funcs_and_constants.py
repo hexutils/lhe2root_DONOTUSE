@@ -27,7 +27,7 @@ lhe_2_root_args = [ #these are all the other options for lhe2root
     'verbose'
 ]
 
-beautified_title = { # a dictionary to beautify your feeble and puny existence
+beautified_title = { # a dictionary to beautify your feeble and puny existence. Add or remove depending on what you want.
     'costhetastard':r'$\cos(\theta*)$',
     'Phi1d':r'$\phi_1$',
     'costheta1d':r'$\cos\theta_1$',
@@ -35,10 +35,10 @@ beautified_title = { # a dictionary to beautify your feeble and puny existence
     'Phid':r'$\phi$',
     'MZ1':r'$m_1$' + ' (GeV)',
     'MZ2':r'$m_2$' + ' (GeV)',
-    'M4L':r'$m_{4\mu}$' + ' (GeV)' #Feel free to add to this should you desire
+    'M4L':r'$m_{4\mu}$' + ' (GeV)'
 }
 
-ranges = { #a dictionary of ranges to make your life easier!
+ranges = { #a dictionary of ranges to make your life easier! Add or remove depending on what you want.
     'Phid':[-np.pi, np.pi],
     'Phi1d':[-np.pi, np.pi],
     'costheta1d':[-1,1],
